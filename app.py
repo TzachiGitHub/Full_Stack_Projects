@@ -1,6 +1,4 @@
-import sys
-
-from flask import Flask
+from flask import Flask, render_template
 import requests
 from werkzeug.utils import redirect
 
@@ -19,31 +17,32 @@ def weather(city):
     params = {'q': city, 'units': 'metric', 'appid': secret}
     response = requests.get(url=url, params=params)
     temperature = response.json()['main']['temp']
-    gifsearch = "okay"
+    gifSearch = "okay"
     if (temperature > 40) is True:
-        gifsearch = "hell"
+        gifSearch = "hell"
         pass
     elif (temperature > 30) is True:
-        gifsearch = "bikini time"
+        gifSearch = "bikini time"
         pass
     elif (temperature > 20) is True:
-        gifsearch = "feels good"
+        gifSearch = "feels good"
         pass
     elif (temperature > 10) is True:
-        gifsearch = "it's a bit chillie"
+        gifSearch = "it's a bit chillie"
         pass
     elif (temperature > 0) is True:
-        gifsearch = "too cold man"
+        gifSearch = "too cold man"
         pass
     else:
-        gifsearch = "freezing"
+        gifSearch = "freezing"
         pass
 
     giphySecret = 'sMccXlD0hvMaQy5Pc8mqWHXAHQQdin8J'
     giphyUrl = 'https://api.giphy.com/v1/gifs/translate'
-    giphyParams = {'api_key': giphySecret, 's': gifsearch, 'weirdness': 10}
+    giphyParams = {'api_key': giphySecret, 's': gifSearch, 'weirdness': 10}
     response = requests.get(url=giphyUrl, params=giphyParams)
-    return redirect((response.json()['data']['embed_url']))
+    image = str(response.json()['data']['images']['downsized']['url'])
+    return render_template("weatherGiphy.html", city=city, temperature=temperature, image=image)
 
 
 if __name__ == "__main__":
