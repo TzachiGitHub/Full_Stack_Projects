@@ -1,0 +1,33 @@
+  .blogposts > div{
+  border: solid black 1px;
+    margin-right:1em;
+    margin-left: 0.5em;
+    margin-top:0.5em;
+    margin-bottom:1em ;
+}
+img{
+  float:right;
+  width:90px;
+}
+
+.container {
+  display:flex
+}
+
+.left{
+  width:75%
+}
+
+.red {
+  color:red
+}
+
+.published{
+  margin-top:2em;
+}
+
+.line{
+  width:100%;
+  text-align:left;
+  margin-left:0;
+}
