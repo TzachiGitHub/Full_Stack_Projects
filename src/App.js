@@ -56,7 +56,7 @@ class App extends React.Component{
                     <br/><br/>
                     <button onClick={this.onSendCityToServerClick}>Search</button>
                     <br/><br/>
-                    {`the weather in ${weather.name} is: ${weather.main.temp}`}
+                    {`The weather in ${weather.name} is: ${weather.main.temp}`}
                     <br/>
                 </div>
             );
