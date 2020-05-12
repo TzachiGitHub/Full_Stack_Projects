@@ -1,0 +1,63 @@
+import React from 'react';
+import './blog.css'
+import Post from "./Post";
+
+var latestPosts = [
+    {
+        content: "blog post #1",
+        link: "https://www.youtube.com/watch?v=_Yhyp-_hX2s&list=RDeJO5HU_7_1w&index=2"
+    },
+    {
+        content: "blog post #2",
+        link: "https://www.youtube.com/watch?v=eJO5HU_7_1w"
+    },
+    {
+        content: "blog post #3",
+        link: "https://www.youtube.com/watch?v=hlVBg7_08n0&list=RDeJO5HU_7_1w&index=3"
+    },
+]
+
+var populaPosts = [
+    {
+        content: "blog post #1",
+        link: "https://www.youtube.com/watch?v=Obim8BYGnOE&list=RDeJO5HU_7_1w&index=5"
+    },
+    {
+        content: "blog post #2",
+        link: "https://www.youtube.com/watch?v=UprcpdwuwCg&list=RDeJO5HU_7_1w&index=4"
+    },
+    {
+        content: "blog post #3",
+        link: "https://www.youtube.com/watch?v=qQkBeOisNM0&list=RDeJO5HU_7_1w&index=7"
+    },
+]
+var SidePosts = () =>{
+    return (
+        latestPosts.map((post)=>{
+            return(
+                <>
+                <li> {post.content}<a href={post.link}>go to page</a></li>
+                <br/>
+                </>
+                )
+
+        })
+    )
+}
+var finalPosts = () => {
+    return (
+            <div class="asidePost">
+                <h1>Latest</h1>
+                <ul>
+                    <SidePosts/>
+                </ul>
+                <br/>
+                <hr className="line"/>
+                <h1>Popular</h1>
+                <ul>
+                    <SidePosts/>
+                </ul>
+            </div>
+    )
+}
+export default finalPosts
