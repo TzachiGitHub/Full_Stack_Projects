@@ -17,14 +17,16 @@ class App extends React.Component{
         const weatherKey = '2021457dd07b9c42f8a109269c0ec65d';
         const weatherUrl = `http://api.openweathermap.org/data/2.5/weather?q=${this.state.city}&appid=${weatherKey}`;
         const axiosGetResponse = axios.get(weatherUrl); // return Promise
-        axiosResponder.then(props=>{
+        var axiosResponder = (props) => {
+            console.log('status = '+ props.status);
+
             if (props.status === 200) {
                 this.setState({
                     weather: props.data
                 });
             }
-        })
-        axiosGetResponse.then(axiosResponder(this));
+        }
+        axiosGetResponse.then(axiosResponder.bind(this));
     }
     onTextInputChange = (event) => {
         console.info('the user entered: ', event.target.value)
@@ -36,14 +38,14 @@ class App extends React.Component{
         const key = 'af4bef339069f117d3aafbea2cb7e7c5';
         const url = `http://api.openweathermap.org/data/2.5/weather?q=${this.state.city}&appid=${key}`;
         const axiosWeatherResponse = axios.get(url); // return Promise
-        axiosWeatherResponder.then(props=>{
+        var axiosWeatherResponder = (props) => {
             if (props.status === 200) {
                 this.setState({
                     weather: props.data
                 });
             }
-        })
-        axiosWeatherResponse.then(axiosWeatherResponder(this));
+        }
+        axiosWeatherResponse.then(axiosWeatherResponder.bind(this));
     }
 
     render() {
