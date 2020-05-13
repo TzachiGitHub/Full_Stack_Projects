@@ -15,7 +15,7 @@ class App extends React.Component{
   componentDidMount() {
     console.log('componentDidMount');
     const weatherKey = '2021457dd07b9c42f8a109269c0ec65d';
-    const weatherUrl = `http://api.openweathermap.org/data/2.5/weather?q=${this.state.city}&appid=${weatherKey}`;
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${this.state.city}&appid=${weatherKey}`;
     const axiosGetResponse = axios.get(weatherUrl); // return Promise
     var axiosResponder = (props) => {
       console.log('status = '+ props.status);
