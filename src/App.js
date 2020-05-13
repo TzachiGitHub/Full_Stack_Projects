@@ -19,7 +19,6 @@ class App extends React.Component{
     const axiosGetResponse = axios.get(weatherUrl); // return Promise
     var axiosResponder = (props) => {
       console.log('status = '+ props.status);
-
       if (props.status === 200) {
         this.setState({
           weather: props.data
@@ -36,7 +35,7 @@ class App extends React.Component{
   };
   onSendCityToServerClick = (event) => {
     const key = 'af4bef339069f117d3aafbea2cb7e7c5';
-    const url = `http://api.openweathermap.org/data/2.5/weather?q=${this.state.city}&appid=${key}`;
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${this.state.city}&appid=${key}`;
     const axiosWeatherResponse = axios.get(url); // return Promise
     var axiosWeatherResponder = (props) => {
       if (props.status === 200) {
