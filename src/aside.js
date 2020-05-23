@@ -46,7 +46,7 @@ var SidePosts = () =>{
 }
 var finalPosts = () => {
     return (
-            <div class="asidePost">
+            <div className="asidePost">
                 <h1>Latest</h1>
                 <ul>
                     <SidePosts/>
