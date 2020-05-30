@@ -1,7 +1,8 @@
 import React from "react";
 import Posts from './Post.js'
+import '../App.css'
 
-var Section = () => {
+var MainSection = () => {
     return (
             <div>
                 <h1>This is My Blog - try clicking the links! ;)</h1>
@@ -11,4 +12,4 @@ var Section = () => {
     )
 }
 
-export default Section
+export default MainSection

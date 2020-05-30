@@ -1,6 +1,5 @@
 import React from 'react';
-import './blog.css'
-import Post from "./Post";
+import '../App.css'
 
 var latestPosts = [
     {
@@ -31,9 +30,9 @@ var populaPosts = [
         link: "https://www.youtube.com/watch?v=qQkBeOisNM0&list=RDeJO5HU_7_1w&index=7"
     },
 ]
-var SidePosts = () =>{
+var SidePosts = (props) =>{
     return (
-        latestPosts.map((post)=>{
+        props.posts.map((post)=>{
             return(
                 <>
                 <li> {post.content}<a href={post.link}>go to page</a></li>
@@ -49,13 +48,15 @@ var finalPosts = () => {
             <div className="asidePost">
                 <h1>Latest</h1>
                 <ul>
-                    <SidePosts/>
+                    <SidePosts
+                    posts={latestPosts}/>
                 </ul>
                 <br/>
                 <hr className="line"/>
                 <h1>Popular</h1>
                 <ul>
-                    <SidePosts/>
+                    <SidePosts
+                    posts={populaPosts}/>
                 </ul>
             </div>
     )
