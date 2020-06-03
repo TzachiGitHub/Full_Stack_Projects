@@ -3,6 +3,15 @@ import '../App.css';
 import SinglePost from './SinglePost';
 import posts from './PostsData';
 
+class Post extends React.component{
+    constructor(props) {
+        super();
+        this.state = {
+
+        }
+    }
+}
+
 var Posts = () => {
     return (
         <div>
@@ -12,7 +21,7 @@ var Posts = () => {
                 content={post.content}
                 published={post.published}
                 image={post.image}
-                number={post.number}
+                id={post.id}
                 linkDescription={post.linkDescription}
                 />
         })}
