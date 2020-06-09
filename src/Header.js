@@ -1,10 +1,20 @@
 import React from 'react';
-import './App.css'
+import '../App.css'
 import {Link} from "react-router-dom";
 
-var Header = () => {
+export default class Header extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            isLoggedIn: false,
+            username: ""
+        }
+    }
+
+    render() {
         return (
-           <header className="topnav">
+            <header className="topnav">
                 <li>
                     <Link to="/home">Home</Link>
                 </li>
@@ -16,12 +26,19 @@ var Header = () => {
                 <li>
                     <Link to="/newPost">New Post</Link>
                 </li>
-                <li className="login">
-                    <Link to="/login">Login</Link>
-                </li>
+                {!this.isLoggedin &&
+                <>
+                    <li className="login">
+                        <Link to="/login">Login</Link>
+                    </li>
+                        <span> | </span>
+                        <li>
+                        <Link to="/Signup">Signup</Link>
+                        </li>
+                </>
+                }
+                {/*{!this.isLoggedin && */}
             </header>
         );
     }
-
-
- export default  Header
+}
