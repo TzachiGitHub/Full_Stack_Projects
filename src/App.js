@@ -4,25 +4,50 @@ import './App.css';
 import AboutMe from './AboutMe';
 import PostRegistration from './newPost';
 import Home from './HomePage/Home';
+import Signup from './Signup';
+import Login from './Login';
 import OnlyPostPage from './HomePage/OnlyPostPage';
+
 import {
     BrowserRouter,
     Switch,
     Route} from 'react-router-dom';
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Header/>
+export default class App extends React.Component{
+    constructor(props) {
+        super(props);
+        this.state ={
+            isLoggedIn: false,
+            username: "",
+        }
+        this.handleLogin = this.handleLogin.bind(this);
 
-      <Switch>
-          <Route path="/about" component={AboutMe}/>
-          <Route path='/post/:number' component={OnlyPostPage}/>
-          <Route path="/newPost" component={PostRegistration}/>
-          <Route path="/" component={Home}/>
-      </Switch>
-    </BrowserRouter>
-  );
+    }
+
+    handleLogin = (props)=>{
+        alert("handlelogin was called!!")
+        console.log("handlelogin was called!!")
+        this.username = props.username;
+        this.isLoggedIn = props.isLoggedIn;
+    }
+
+    render(){
+        return(
+            <BrowserRouter>
+                <Header/>
+
+                <Switch>
+                    <Route path="/about" component={AboutMe}/>
+                    <Route path='/post/:id' component={OnlyPostPage}/>
+                    <Route path="/newPost" component={PostRegistration}/>
+
+                    {/*<Route path="/Signup" component={Signup}/>*/}
+                    <Route path="/Signup" render={(props)=> <Signup handleLogin={this.handleLogin} userLoggedIn={this.userLoggedIn} />}/>
+
+                    <Route path="/login" component={Login}/>
+                    <Route path="/" component={Home}/>
+                </Switch>
+            </BrowserRouter>
+        )
+    }
 }
-
-export default App;

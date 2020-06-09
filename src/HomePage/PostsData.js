@@ -2,7 +2,7 @@ import '../App.css'
 var posts = [
     {
         title: "Blog Post #1",
-        number: 1,
+        id: 1,
         linkDescription: "here",
         image: "https://static2.clutch.co/s3fs-public/logos/imagex.png?8LJHsHudIJsZ7HDb.z6r7w35ShAkg1fp",
         published: 'Published 1 days ago by Israel',
@@ -10,7 +10,7 @@ var posts = [
     },
     {
         title: "Blog Post #2",
-        number: 2,
+        id: 2,
         linkDescription: "here",
         image: "https://static2.clutch.co/s3fs-public/logos/imagex.png?8LJHsHudIJsZ7HDb.z6r7w35ShAkg1fp",
         published: 'Published 2 days ago by Israel',
@@ -19,7 +19,7 @@ var posts = [
     },
     {
         title: "Blog Post #3",
-        number: 3,
+        id: 3,
         linkDescription: "here",
         image: "https://static2.clutch.co/s3fs-public/logos/imagex.png?8LJHsHudIJsZ7HDb.z6r7w35ShAkg1fp",
         published: 'Published 3 days ago by Israel',
@@ -28,7 +28,7 @@ var posts = [
     },
     {
         title: "Blog Post #4",
-        number: 4,
+        id: 4,
         linkDescription: "here",
         image: "https://static2.clutch.co/s3fs-public/logos/imagex.png?8LJHsHudIJsZ7HDb.z6r7w35ShAkg1fp",
         published: 'Published 4 days ago by Israel',

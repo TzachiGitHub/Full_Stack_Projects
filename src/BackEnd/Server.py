@@ -1,17 +1,19 @@
 from flask import Flask, request
+from flask_cors import CORS
 import mysql.connector as mysql
 import json
+import re
 
 db = mysql.connect(
 	host = "localhost",
 	user = "root",
-	password = "password",
+	password = "FUCKOFF8665",
 	database = "blog"
 	)
-
 print(db)
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/posts', methods=['GET', 'POST'])
 def manage_posts():
@@ -20,6 +22,28 @@ def manage_posts():
 	else:
 		return add_post()
 
+@app.route('/signup', methods=['POST'])
+def signin():
+	msg = ''
+	data = request.get_json()
+	username = data['username']
+	password = data['password']
+	curser = db.cursor()
+	existsQuery = "select id from users where username = %s"
+	existsValues = (username,)
+	curser.execute(existsQuery,existsValues)
+	recordExists = curser.fetchone()
+	if recordExists:
+		msg = 'the username is already taken - please choose another'
+	elif not re.match(r'[A-Za-z0-9]+', username):
+		msg = 'The username must contain only characters and numbers, please choose another username'
+	else:
+		insertQuery = 'insert into users (username, password) values (%s, %s)'
+		insertValues = (username, password)
+		curser.execute(insertQuery, insertValues)
+		db.commit()
+		msg = 'You have Successfully signed up!'
+	return msg
 
 def add_post():
 	data = request.get_json()
@@ -47,6 +71,7 @@ def get_all_posts():
 	for r in records:
 		data.append(dict(zip(header, r)))
 	return json.dumps(data)
+
 
 
 if __name__ == "__main__":

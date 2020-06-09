@@ -1,5 +1,5 @@
 import React from "react";
-import Posts from './Post.js'
+import Posts from './Posts.js'
 import '../App.css'
 
 var MainSection = () => {

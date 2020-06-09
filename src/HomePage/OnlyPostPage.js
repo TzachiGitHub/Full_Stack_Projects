@@ -1,18 +1,53 @@
-import React from 'react';
-import posts from './PostsData';
+import React, {Component} from 'react';
 import {useParams} from 'react-router-dom'
+import axios from 'axios';
+export default class SinglePost extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            id: props.match.params.id,
+            post: [],
+            resp: false,
+        }
+    }
 
-function SinglePost(){
-    var {number} = useParams();
-    return (
-        <div className="blogPosts">
-            <p>{posts[number - 1].title}</p>
-            <img src={posts[number - 1].image} alt="X"/>
-            <h3>{posts[number - 1].title}</h3>
-            <p dangerouslySetInnerHTML={{__html: posts[number - 1].content}}></p>
-            <p className="published">{posts[number - 1].published}</p>
-        </div>
-    )
+    componentDidMount() {
+        const url = 'http://localhost:5000/post/' + this.state.id
+        axios.get(url)
+            .then((res) => {
+                if (res.status === 200) {
+                    this.setState({
+                        post: res.data,
+                        resp: true,
+                    })
+                    console.log(this.state.post)
+                    console.log(this.state.resp)
+                }
+            })
+            .catch(er=>{
+                console.log(er)
+            });
+
+    }
+
+    render() {
+        var {resp, post} = this.state;
+        return (
+            <div>
+                {resp &&
+                <div className="blogPosts">
+                    <p>{post.title}</p>
+                    <img
+                        src={post.imageUrl}
+                        alt="under
+                    Maintanance"
+                    />
+                    <h3>{post.title}</h3>
+                    <p dangerouslySetInnerHTML={{__html: post.content}}></p>
+                    <p className="published">{post.published}</p>
+                </div>
+                }
+            </div>
+        )
+    }
 }
-
-export default SinglePost;
