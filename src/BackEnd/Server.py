@@ -1,8 +1,9 @@
-from flask import Flask, request
+from flask import Flask, request, abort, make_response
 from flask_cors import CORS
 import mysql.connector as mysql
 import json
 import re
+import uuid
 
 db = mysql.connect(
 	host = "localhost",
@@ -22,8 +23,21 @@ def manage_posts():
 	else:
 		return add_post()
 
+@app.route('/post/<id>', methods=['GET'])
+def getPost(id):
+	query = "select id, title, content, linkDescription, imageUrl from posts where id = %s"
+	values = (id,)
+	cursor = db.cursor()
+	cursor.execute(query, values)
+	record = cursor.fetchone()
+	header = ['id', 'title', 'content', 'linkDescription', 'imageUrl']
+	jsonAnswer = json.dumps(dict(zip(header, record)))
+
+	return jsonAnswer
+
+
 @app.route('/signup', methods=['POST'])
-def signin():
+def signup():
 	msg = ''
 	data = request.get_json()
 	username = data['username']
@@ -31,26 +45,58 @@ def signin():
 	curser = db.cursor()
 	existsQuery = "select id from users where username = %s"
 	existsValues = (username,)
-	curser.execute(existsQuery,existsValues)
+	curser.execute(existsQuery, existsValues)
 	recordExists = curser.fetchone()
 	if recordExists:
-		msg = 'the username is already taken - please choose another'
-	elif not re.match(r'[A-Za-z0-9]+', username):
-		msg = 'The username must contain only characters and numbers, please choose another username'
+		abort(401)
 	else:
 		insertQuery = 'insert into users (username, password) values (%s, %s)'
 		insertValues = (username, password)
 		curser.execute(insertQuery, insertValues)
 		db.commit()
-		msg = 'You have Successfully signed up!'
-	return msg
+		curser.close()
+		session_id = str(uuid.uuid4())
+		response = make_response()
+		response.set_cookie("session_id", session_id)
+		return response
+
+
+@app.route('/login', methods=['POST'])
+def login():
+	data = request.get_json()
+	username = data['username']
+	password = data['password']
+	curser = db.cursor()
+	# check if the username exists
+	existsQuery = "select id, username, password from users where username = %s"
+	existsValues = (username,)
+	curser.execute(existsQuery, existsValues)
+	recordExists = curser.fetchone()
+	if not recordExists:
+		abort(401)
+
+	samePasswordQuery = "select id from users where username = %s and password = %s"
+	samePasswordValues = (username, password)
+	curser.execute(samePasswordQuery, samePasswordValues)
+	correctPassword = curser.fetchone()
+	if not correctPassword:
+		abort(403)
+	# sessions part of the code
+	session_id = str(uuid.uuid4())
+	user_id = recordExists[0]
+	sessionQuery = "insert into sessions (user_id, session_id) values (%s, %s) on duplicate key update session_id = %s"
+	sessionValues = (user_id, session_id, session_id)
+	curser.execute(sessionQuery, sessionValues)
+	db.commit()
+	response = make_response()
+	response.set_cookie("session_id", session_id)
+	return response
+
 
 def add_post():
 	data = request.get_json()
-	print(data)
-	print("here")
-	query = "insert into posts (title, content) values (%s, %s)"
-	values = (data['title'], data['content'])
+	query = "insert into posts (title, content, published, imageUrl, linkDescription) values (%s, %s, %s, %s, %s)"
+	values = (data['title'], data['content'], data['published'], data['imageUrl'], data['linkDescription'])
 	cursor = db.cursor()
 	cursor.execute(query, values)
 	db.commit()
@@ -60,13 +106,12 @@ def add_post():
 
 
 def get_all_posts():
-	query = "select id, title, content from posts"
+	query = "select id, title, content, linkDescription, imageUrl from posts"
 	cursor = db.cursor()
 	cursor.execute(query)
 	records = cursor.fetchall()
 	cursor.close()
-	print(records)
-	header = ['id', 'title', 'content']
+	header = ['id', 'title', 'content', 'linkDescription', 'image']
 	data = []
 	for r in records:
 		data.append(dict(zip(header, r)))

@@ -8,12 +8,11 @@ export default class Signup extends React.Component{
         this.state ={
             username: "",
             password: "",
-            isLoggedIn: false,
+            LoggedIn: false,
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.handleLogin = props.handleLogin.bind(this);
     }
 
     handleChange(event){
@@ -24,30 +23,27 @@ export default class Signup extends React.Component{
     handleSubmit(event){
         event.preventDefault();
         const {username, password} = this.state;
-        console.log("got into handleSubmit forum")
-
-        axios.post('http://127.0.0.1:5000/signup',
-            {
+        const data ={
                 username: username,
                 password: password
-            })
-            .then( (res) => {
-                alert(res.data.msg);
+            }
+        const url = 'http://127.0.0.1:5000/signup';
+        axios.post(url, data)
+            .then((res)=> {
                 if(res.status === 200){
-                    //if the response is an array and it is not empty - success! - go to homepage
-                    if (Array.isArray(res.data.resp) && res.data.resp.length) {
-                        console.log("form submitted");
-                        this.isLoggedIn = true;
-
-                        this.props.handleLogin({"username": username, "isLoggedIn": this.isLoggedIn})
-
-                        this.props.history.push('/');
-                    }
+                    alert("Success! signed in perfectly!")
+                    console.log("signup form submitted");
+                    // this.props.history.push('/');
+                    console.log(this.props)
+                    //TODO - fix go to homepage function - this.props.history.push('/');
+                    
                 }
+                // this.props.handleLogin({"username": username, "LoggedIn": this.LoggedIn})
             }).catch((error)=>{
                 if(error){
-                    console.log("signup failed\n", error);
-                    window.location.reload(false);
+                    console.log(error)
+                    alert("The username already exists, please choose another or log in", error);
+                    // window.location.reload(false);
                 }
             })
     }
@@ -56,6 +52,10 @@ export default class Signup extends React.Component{
         return (
             <div>
                 <form onSubmit={this.handleSubmit}>
+                    <h3>Welcome to the Signup Page!</h3>
+                    <h3>Please enter name and Password:</h3>
+
+                    <p>name:</p>
                     <input
                         type="text"
                         placeholder="username"
@@ -63,12 +63,14 @@ export default class Signup extends React.Component{
                         required
                     />
                     <br/><br/>
+                    <p>password:</p>
                     <input
                         type="password"
                         placeholder="password"
                         onChange={event => {this.setState({password: event.target.value})}}
                         required
                     />
+                    <br/><br/>
                     <button type="submit">Signup</button>
                 </form>
             </div>

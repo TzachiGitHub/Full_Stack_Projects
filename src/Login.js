@@ -24,23 +24,29 @@ export default class Login extends React.Component{
         event.preventDefault();
         const {username, password} = this.state;
         console.log("got into handleSubmit forum")
-
-        axios.post('http://127.0.0.1:5000/login',
-            {
-                username: username,
-                password: password
-            })
-            .then( (res) => {
-                alert(res.data.msg);
-                if(res.status === 200 && res.data.isLoggedIn){
+        const jsonData = {
+            username: username,
+            password: password
+            }
+        const url = 'http://127.0.0.1:5000/login'
+        axios.post(url, jsonData)
+            .then((res)=> {
+                if(res.status === 200){
+                    alert("Login success!");
                     console.log("login form submitted");
-                    this.props.history.push('/');
+                    // this.props.history.push('/');
+                    console.log(this.props)
+
                 }
+
             }).catch((error)=>{
             if(error){
-                console.log("signup failed\n", error);
+                alert("wrong username/password, please try again\n", error);
+                console.log(error)
+
                 window.location.reload(false);
             }
+            if(error.status){}
         })
     }
 
@@ -48,13 +54,20 @@ export default class Login extends React.Component{
         return (
             <div>
                 <form onSubmit={this.handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="username"
-                        onChange={event => {this.setState({username: event.target.value})}}
-                        required
-                    />
-                    <br/><br/>
+
+                    <h2> Please Enter a Username and a Password to Login:</h2>
+
+                    <div>
+                        <p> Username:</p>
+                        <input
+                            type="text"
+                            placeholder="username"
+                            onChange={event => {this.setState({username: event.target.value})}}
+                            required
+                        />
+                    </div>
+
+                    <p> password:</p>
                     <input
                         type="password"
                         placeholder="password"

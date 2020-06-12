@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import '../App.css';
 import SinglePost from './SinglePost';
-// import posts from './PostsData';
 import axios from 'axios';
 
 
@@ -22,8 +21,8 @@ export default class Posts extends Component{
                     data: res.data,
                     resp: true
                 });
-                console.log(res.data)
-                console.log(this.data)
+                // console.log(res.data)
+                // console.log(this.data)
             }
         });
     }
