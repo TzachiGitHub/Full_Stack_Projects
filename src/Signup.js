@@ -8,7 +8,6 @@ export default class Signup extends React.Component{
         this.state ={
             username: "",
             password: "",
-            LoggedIn: false,
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -32,13 +31,20 @@ export default class Signup extends React.Component{
             .then((res)=> {
                 if(res.status === 200){
                     alert("Success! signed in perfectly!")
-                    console.log("signup form submitted");
-                    // this.props.history.push('/');
+                    // console.log("0:signup form submitted");
+                    var loginData = {
+                        username: this.state.username,
+                        isLoggedIn: true
+                        }
+                    this.props.handleLogin(loginData)
                     console.log(this.props)
                     //TODO - fix go to homepage function - this.props.history.push('/');
-                    
+                    // console.log("1:into status==200")
+
                 }
-                // this.props.handleLogin({"username": username, "LoggedIn": this.LoggedIn})
+                // console.log("2:in then.(res) outside of if(status===200)")
+                this.props.history.push('/');
+                // console.log("3:after this.props.history.push('/')")
             }).catch((error)=>{
                 if(error){
                     console.log(error)

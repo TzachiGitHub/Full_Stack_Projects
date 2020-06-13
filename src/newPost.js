@@ -14,9 +14,8 @@ export default class newPost extends Component{
         }
     }
     addPost = (e) =>{
-        var {title, content, published, imageUrl} = this.state
+        var {title, content, published, imageUrl, linkDescription} = this.state
         if(title !== "" && content !== "" && published !== "" && imageUrl !== "") {
-            var {title, content, published, imageUrl, linkDescription} = this.state
             var jsonPost =
                 {
                     "title": title,

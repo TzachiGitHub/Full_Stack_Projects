@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
-import {useParams} from 'react-router-dom'
 import axios from 'axios';
-export default class SinglePost extends React.Component {
+export default class SinglePost extends Component {
     constructor(props) {
         super(props);
         this.state = {

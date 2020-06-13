@@ -33,12 +33,14 @@ export default class Login extends React.Component{
             .then((res)=> {
                 if(res.status === 200){
                     alert("Login success!");
-                    console.log("login form submitted");
-                    // this.props.history.push('/');
                     console.log(this.props)
-
+                    var loginData = {
+                        username: this.state.username,
+                        isLoggedIn: true
+                    }
+                    this.props.handleLogin(loginData)
+                    this.props.history.push('/');
                 }
-
             }).catch((error)=>{
             if(error){
                 alert("wrong username/password, please try again\n", error);
