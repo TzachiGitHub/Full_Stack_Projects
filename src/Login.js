@@ -32,13 +32,12 @@ export default class Login extends React.Component{
         axios.post(url, jsonData)
             .then((res)=> {
                 if(res.status === 200){
-                    alert("Login success!");
-                    console.log(this.props)
+                    // alert("Login success!");
                     var loginData = {
                         username: this.state.username,
                         isLoggedIn: true
                     }
-                    this.props.handleLogin(loginData)
+                    this.props.handleLogin(loginData, this.props)
                     this.props.history.push('/');
                 }
             }).catch((error)=>{
@@ -46,9 +45,8 @@ export default class Login extends React.Component{
                 alert("wrong username/password, please try again\n", error);
                 console.log(error)
 
-                window.location.reload(false);
+                // window.location.reload(false);
             }
-            if(error.status){}
         })
     }
 

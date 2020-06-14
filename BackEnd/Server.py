@@ -4,12 +4,13 @@ import mysql.connector as mysql
 import json
 import re
 import uuid
+import bcrypt
 
 db = mysql.connect(
-	host = "localhost",
-	user = "root",
-	password = "FUCKOFF8665",
-	database = "blog"
+	host="localhost",
+	user="root",
+	password="FUCKOFF8665",
+	database="blog"
 	)
 print(db)
 
@@ -30,6 +31,7 @@ def getPost(id):
 	cursor = db.cursor()
 	cursor.execute(query, values)
 	record = cursor.fetchone()
+	cursor.close()
 	header = ['id', 'title', 'content', 'linkDescription', 'imageUrl']
 	jsonAnswer = json.dumps(dict(zip(header, record)))
 
@@ -42,19 +44,20 @@ def signup():
 	data = request.get_json()
 	username = data['username']
 	password = data['password']
-	curser = db.cursor()
+	cursor = db.cursor()
 	existsQuery = "select id from users where username = %s"
 	existsValues = (username,)
-	curser.execute(existsQuery, existsValues)
-	recordExists = curser.fetchone()
+	cursor.execute(existsQuery, existsValues)
+	recordExists = cursor.fetchone()
 	if recordExists:
+		cursor.close()
 		abort(401)
 	else:
 		insertQuery = 'insert into users (username, password) values (%s, %s)'
 		insertValues = (username, password)
-		curser.execute(insertQuery, insertValues)
+		cursor.execute(insertQuery, insertValues)
 		db.commit()
-		curser.close()
+		cursor.close()
 		session_id = str(uuid.uuid4())
 		response = make_response()
 		response.set_cookie("session_id", session_id)
@@ -66,31 +69,62 @@ def login():
 	data = request.get_json()
 	username = data['username']
 	password = data['password']
-	curser = db.cursor()
+	cursor = db.cursor()
 	# check if the username exists
 	existsQuery = "select id, username, password from users where username = %s"
 	existsValues = (username,)
-	curser.execute(existsQuery, existsValues)
-	recordExists = curser.fetchone()
+	cursor.execute(existsQuery, existsValues)
+	recordExists = cursor.fetchone()
 	if not recordExists:
+		cursor.close()
 		abort(401)
 
-	samePasswordQuery = "select id from users where username = %s and password = %s"
-	samePasswordValues = (username, password)
-	curser.execute(samePasswordQuery, samePasswordValues)
-	correctPassword = curser.fetchone()
-	if not correctPassword:
+	passwordQuery = "select password from users where username = %s"
+	passwordValues = (username,)
+	cursor.execute(passwordQuery, passwordValues)
+	passwordFromDB = cursor.fetchone()[0]
+	hashed = bcrypt.hashpw(passwordFromDB.encode('utf8'), bcrypt.gensalt())
+	if bcrypt.hashpw(password.encode('utf8'), hashed) != hashed:
+		cursor.close()
 		abort(403)
 	# sessions part of the code
 	session_id = str(uuid.uuid4())
 	user_id = recordExists[0]
 	sessionQuery = "insert into sessions (user_id, session_id) values (%s, %s) on duplicate key update session_id = %s"
 	sessionValues = (user_id, session_id, session_id)
-	curser.execute(sessionQuery, sessionValues)
+	cursor.execute(sessionQuery, sessionValues)
 	db.commit()
 	response = make_response()
 	response.set_cookie("session_id", session_id)
+	cursor.close()
 	return response
+
+
+@app.route('/getUserId/<username>', methods=['GET'])
+def getUserId(username):
+	cursor = db.cursor()
+	# check if the username exists
+	existsQuery = "select id from users where username = %s"
+	existsValues = (username,)
+	cursor.execute(existsQuery, existsValues)
+	recordExists = cursor.fetchone()
+	if not recordExists:
+		abort(401)
+	id = recordExists[0]
+	cursor.close()
+	jsonId = {'id': id}
+	return jsonId
+
+@app.route('/logout/<id>', methods=['POST'])
+def logout(id):
+	query = "delete from sessions where user_id = %s"
+	values = (id,)
+	cursor = db.cursor()
+	cursor.execute(query, values)
+	db.commit()
+	cursor.close()
+	return "deleted from the database"
+
 
 
 def add_post():
@@ -103,6 +137,8 @@ def add_post():
 	new_post_id = cursor.lastrowid
 	cursor.close()
 	return 'Added' + str(new_post_id)
+
+
 
 
 def get_all_posts():

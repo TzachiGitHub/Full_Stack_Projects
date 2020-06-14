@@ -107,7 +107,16 @@ ul {
 }
 
 .login {
-  margin-left: auto
+  margin-left: auto;
+}
+
+.logindiv{
+  margin-left: auto;
+  display: flex;
+}
+
+.nameHeader{
+  margin-right: 10em;
 }
 
 li {

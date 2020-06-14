@@ -23,36 +23,33 @@ export default class Signup extends React.Component{
         event.preventDefault();
         const {username, password} = this.state;
         const data ={
-                username: username,
-                password: password
-            }
+            username: username,
+            password: password
+        }
         const url = 'http://127.0.0.1:5000/signup';
         axios.post(url, data)
             .then((res)=> {
                 if(res.status === 200){
-                    alert("Success! signed in perfectly!")
+                    // alert("Success! signed in perfectly!")
                     // console.log("0:signup form submitted");
                     var loginData = {
                         username: this.state.username,
                         isLoggedIn: true
-                        }
-                    this.props.handleLogin(loginData)
+                    }
+                    //calling the handleLogin function from the App.js class - to save the userData and pass it on
+                    this.props.handleLogin(loginData, this.props)
                     console.log(this.props)
-                    //TODO - fix go to homepage function - this.props.history.push('/');
-                    // console.log("1:into status==200")
-
                 }
                 // console.log("2:in then.(res) outside of if(status===200)")
                 this.props.history.push('/');
                 // console.log("3:after this.props.history.push('/')")
             }).catch((error)=>{
-                if(error){
-                    console.log(error)
-                    alert("The username already exists, please choose another or log in", error);
-                    // window.location.reload(false);
-                }
-            })
+            alert("The username already exists, please choose another or log in");
+            console.log(error)
+            window.location.reload(false);
+        })
     }
+
 
     render(){
         return (
