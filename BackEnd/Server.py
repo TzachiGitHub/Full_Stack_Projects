@@ -54,7 +54,10 @@ def signup():
 		abort(401)
 	else:
 		insertQuery = 'insert into users (username, password) values (%s, %s)'
-		insertValues = (username, password)
+
+		hashedPassword = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+		insertValues = (username, hashedPassword)
 		cursor.execute(insertQuery, insertValues)
 		db.commit()
 		cursor.close()
@@ -79,12 +82,8 @@ def login():
 		cursor.close()
 		abort(401)
 
-	passwordQuery = "select password from users where username = %s"
-	passwordValues = (username,)
-	cursor.execute(passwordQuery, passwordValues)
-	passwordFromDB = cursor.fetchone()[0]
-	hashed = bcrypt.hashpw(passwordFromDB.encode('utf8'), bcrypt.gensalt())
-	if bcrypt.hashpw(password.encode('utf8'), hashed) != hashed:
+	passwordFromDB = recordExists[2].encode('utf-8')
+	if bcrypt.hashpw(password.encode('utf-8'), passwordFromDB) != passwordFromDB:
 		cursor.close()
 		abort(403)
 	# sessions part of the code
