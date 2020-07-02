@@ -1,21 +1,28 @@
 from flask import Flask, request, abort, make_response
-from flask_cors import CORS
 import mysql.connector as mysql
 import json
 import re
 import uuid
 import bcrypt
+#from flask_cors import CORS
 
 db = mysql.connect(
-	host="localhost",
-	user="root",
-	password="FUCKOFF8665",
+    host="my-rds.cdl39yfkqbt1.us-east-1.rds.amazonaws.com",
+	port=3306,
+	user="admin",
+	password="password",
 	database="blog"
 	)
-print(db)
 
-app = Flask(__name__)
-CORS(app)
+app = Flask(__name__,
+            static_folder='/home/ubuntu/build',
+            static_url_path='/')
+
+#CORS(app)
+
+@app.route('/', methods=['GET'])
+def index():
+    return app.send_static_file("index.html")
 
 @app.route('/posts', methods=['GET', 'POST'])
 def manage_posts():
@@ -34,7 +41,6 @@ def getPost(id):
 	cursor.close()
 	header = ['id', 'title', 'content', 'linkDescription', 'imageUrl']
 	jsonAnswer = json.dumps(dict(zip(header, record)))
-
 	return jsonAnswer
 
 
@@ -98,7 +104,6 @@ def login():
 	cursor.close()
 	return response
 
-
 @app.route('/getUserId/<username>', methods=['GET'])
 def getUserId(username):
 	cursor = db.cursor()
@@ -124,8 +129,6 @@ def logout(id):
 	cursor.close()
 	return "deleted from the database"
 
-
-
 def add_post():
 	data = request.get_json()
 	query = "insert into posts (title, content, published, imageUrl, linkDescription) values (%s, %s, %s, %s, %s)"
@@ -136,9 +139,6 @@ def add_post():
 	new_post_id = cursor.lastrowid
 	cursor.close()
 	return 'Added' + str(new_post_id)
-
-
-
 
 def get_all_posts():
 	query = "select id, title, content, linkDescription, imageUrl from posts"
@@ -151,7 +151,6 @@ def get_all_posts():
 	for r in records:
 		data.append(dict(zip(header, r)))
 	return json.dumps(data)
-
 
 
 if __name__ == "__main__":
