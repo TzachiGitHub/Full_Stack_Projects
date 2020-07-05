@@ -129,6 +129,10 @@ def logout(id):
 	cursor.close()
 	return "deleted from the database"
 
+@app.route("/api/alive", methods=['GET'])
+def alive():
+	return "Alive!"
+
 def add_post():
 	data = request.get_json()
 	query = "insert into posts (title, content, published, imageUrl, linkDescription) values (%s, %s, %s, %s, %s)"
@@ -151,7 +155,6 @@ def get_all_posts():
 	for r in records:
 		data.append(dict(zip(header, r)))
 	return json.dumps(data)
-
 
 if __name__ == "__main__":
 	app.run()
