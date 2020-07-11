@@ -11,6 +11,7 @@ import OnlyPostPage from './HomePage/OnlyPostPage';
 import axios from 'axios';
 import 'react-router-dom';
 import {Redirect} from 'react-router-dom';
+import Cookie from 'js-cookie'
 
 import {
     BrowserRouter,
@@ -26,17 +27,19 @@ export default class App extends React.Component{
             loggedInUserId: null,
             currentPost: null
         }
-
+        console.log(Cookie.get())
         this.handleLogin = this.handleLogin.bind(this);
         this.getUserId = this.getUserId.bind(this);
         this.logOut = this.logOut.bind(this);
     }
 
-    handleLogin = (loginData, )=>{
+    handleLogin = (loginData)=>{
         this.setState({
             username: loginData.username,
             isLoggedIn: loginData.isLoggedIn,
         })
+        Cookie.set(loginData.cookie)
+        console.log(loginData.cookie)
         this.getUserId(loginData.username);
     }
 

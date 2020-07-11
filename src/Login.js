@@ -37,7 +37,8 @@ export default class Login extends React.Component{
                     // alert("Login success!");
                     var loginData = {
                         username: this.state.username,
-                        isLoggedIn: true
+                        isLoggedIn: true,
+                        cookie: res.data
                     }
                     this.props.handleLogin(loginData, this.props)
                     //this.props.history.push('/')
