@@ -26,8 +26,10 @@ export default class Signup extends React.Component{
             username: username,
             password: password
         }
-        const url = 'http://127.0.0.1:5000/signup';
-        axios.post(url, data)
+        //const deployUrl = '/signup';
+        const localUrl = 'http://127.0.0.1:5000/signup';
+
+        axios.post(localUrl, data)
             .then((res)=> {
                 if(res.status === 200){
                     // alert("Success! signed in perfectly!")
@@ -38,11 +40,8 @@ export default class Signup extends React.Component{
                     }
                     //calling the handleLogin function from the App.js class - to save the userData and pass it on
                     this.props.handleLogin(loginData, this.props)
-                    console.log(this.props)
+                    this.props.history.push('/');
                 }
-                // console.log("2:in then.(res) outside of if(status===200)")
-                this.props.history.push('/');
-                // console.log("3:after this.props.history.push('/')")
             }).catch((error)=>{
             alert("The username already exists, please choose another or log in");
             console.log(error)

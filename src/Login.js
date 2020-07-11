@@ -28,17 +28,23 @@ export default class Login extends React.Component{
             username: username,
             password: password
             }
-        const url = 'http://127.0.0.1:5000/login'
-        axios.post(url, jsonData)
+        //const deployUrl = '/login'
+        const localUrl = 'http://127.0.0.1:5000/login'
+
+        axios.post(localUrl, jsonData)
             .then((res)=> {
-                if(res.status === 200){
+                if(res.status === 200) {
                     // alert("Login success!");
                     var loginData = {
                         username: this.state.username,
                         isLoggedIn: true
                     }
                     this.props.handleLogin(loginData, this.props)
-                    this.props.history.push('/');
+                    //this.props.history.push('/')
+
+                    setTimeout(()=> {
+                      this.props.history.push('/')
+                        }, 500);
                 }
             }).catch((error)=>{
             if(error){

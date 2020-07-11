@@ -17,9 +17,8 @@ export default class Header extends React.Component {
         this.state.logOut();
     }
 
-
     render() {
-        var {loggedIn, username} = this.props
+        var {isloggedIn, username} = this.props
         var {logOut} = this.state
         return (
             <header className="topnav">
@@ -34,7 +33,7 @@ export default class Header extends React.Component {
                 <li>
                     <Link to="/newPost">New Post</Link>
                 </li>
-                {!loggedIn &&
+                {!isloggedIn &&
                 <>
                     <li className="login">
                         <Link to="/login">Login</Link>
@@ -45,7 +44,7 @@ export default class Header extends React.Component {
                         </li>
                 </>
                 }
-                {loggedIn &&
+                {isloggedIn &&
                     <div className="logindiv">
                         <p className="nameHeader">Hi {username}!</p>
                         <li className="login">

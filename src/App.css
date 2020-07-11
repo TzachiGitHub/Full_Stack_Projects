@@ -80,11 +80,19 @@ code {
   width: 70%
 }
 
+.post{
+  border: solid black 1px;
+  margin: 0.75%;
+}
+
 img{
   float:right;
   width:90px;
 }
 
+.postTitle{
+
+}
 
 .red {
   color:red
@@ -139,4 +147,35 @@ li {
 
 .strongText{
   font-weight: bold;
+}
+
+.comments{
+  font-size: 10px;
+  color: navy;
+  margin: 20px 100px;
+}
+
+.comment{
+  border: 2px solid black;
+  font-size: 10px;
+  color: navy;
+  margin: 20px 100px;
+}
+
+#deletePostLink{
+
+  margin-right: 20px;
+  display: inline;
+  margin-left: 25px;
+}
+
+.FullPostLink{
+  margin-left: 10px;
+  margin-bottom: 20px;
+  display: inline;
+}
+
+.postLinks{
+  display: inline;
+  font-size: 0.9rem;
 }

@@ -2,13 +2,16 @@ import React from 'react';
 import Header from './Header.js';
 import './App.css';
 import AboutMe from './AboutMe';
-import PostRegistration from './newPost';
+import NewPost from './newPost';
 import Home from './HomePage/Home';
 import Signup from './Signup';
+import EditPost from './EditPost';
 import Login from './Login';
 import OnlyPostPage from './HomePage/OnlyPostPage';
 import axios from 'axios';
 import 'react-router-dom';
+import {Redirect} from 'react-router-dom';
+
 import {
     BrowserRouter,
     Switch,
@@ -20,30 +23,32 @@ export default class App extends React.Component{
         this.state ={
             isLoggedIn: false,
             username: "",
-            id: null
+            loggedInUserId: null,
+            currentPost: null
         }
+
         this.handleLogin = this.handleLogin.bind(this);
         this.getUserId = this.getUserId.bind(this);
         this.logOut = this.logOut.bind(this);
     }
 
-    handleLogin = (loginData)=>{
+    handleLogin = (loginData, )=>{
         this.setState({
             username: loginData.username,
             isLoggedIn: loginData.isLoggedIn,
         })
         this.getUserId(loginData.username);
-        this.render()
     }
 
-    getUserId = (id)=>{
+    getUserId = (username)=>{
         //get the username's id
-        const url = 'http://127.0.0.1:5000/getUserId/' + id;
-        axios.get(url)
+        const localUrl = "http://localhost:5000/getUserId/" + username
+        //const deployUrl = '/getUserId/' + id;
+        axios.get(localUrl)
             .then((res)=> {
                 if (res.status === 200) {
                     this.setState({
-                        id: res.data.id
+                        loggedInUserId: res.data.id
                     })
                 }
             }).catch((err) => {
@@ -51,37 +56,46 @@ export default class App extends React.Component{
         })
     }
 
+    setCurrentPost = (post)=>{
+        this.setState({
+            currentPost: post
+        })
+    }
+
     logOut = ()=>{
         this.setState({
-            id: null,
+            loggedInUserId: null,
             isLoggedIn: false,
             username: ""
         })
-        const url = 'http://127.0.0.1:5000/logout/' + this.state.id;
-        axios.post(url)
+        //const deployUrl = '/logout/' + this.state.id;
+        const localUrl = 'http://127.0.0.1:5000/logout/' + this.state.loggedInUserId;
+
+        axios.post(localUrl)
             .then(res => {
                 if (res.status === 200) {
-                    // alert("Logout Successfully" + res.data)
+                    alert("Logout Successfully!")
                 }
             }).catch(err => {
-            console.log("Something went wrong with the logout, please try again")
+                console.log(err)
+                console.log("Something went wrong with the logout, please try again")
         })
     }
 
     render(){
-        var {isLoggedIn, username} = this.state;
+        var {loggedInUserId, isLoggedIn, username, currentPost} = this.state;
         return(
             <BrowserRouter>
-                <Header loggedIn={isLoggedIn} logOut={this.logOut} username={username}/>
-
+                <Header loggedInUserId={loggedInUserId} isloggedIn={isLoggedIn} logOut={this.logOut} username={username}/>
                 <Switch>
                     <Route path="/about" component={AboutMe}/>
-                    <Route path='/post/:id' component={OnlyPostPage}/>
-                    <Route path="/newPost" component={PostRegistration}/>
+                    <Route path='/post/:id' component={(props)=><OnlyPostPage {...props} currentPost={currentPost} loggedInUserId={loggedInUserId} isLoggedIn={isLoggedIn}/>}/>
                     <Route path="/Signup" render={(props) => <Signup {...props} handleLogin={this.handleLogin}/>}/>
                     <Route path="/login" component={(props) => <Login {...props} handleLogin={this.handleLogin}/>}/>
                     <Route path="/logout" component={this.logout}/>
-                    <Route path="/" component={Home}/>
+                    <Route path="/newPost" component={(props)=> isLoggedIn ? <NewPost {...props} loggedInUserId={loggedInUserId}/> : <Redirect to={'/login'}/>}/>}
+                    <Route path="/editPost" component={(props)=> isLoggedIn ? <EditPost {...props} currentPost={currentPost} username={username}/> : <Redirect to={'/login'}/>}/>
+                    <Route path="/" component={(props)=><Home {...props} isLoggedIn={isLoggedIn} loggedInUserId={this.state.loggedInUserId} setCurrentPost={this.setCurrentPost}/>}/>
                 </Switch>
             </BrowserRouter>
         )

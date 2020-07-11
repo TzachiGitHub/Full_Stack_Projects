@@ -1,20 +1,19 @@
 import React, {Component} from 'react';
-import './App.css'
+import '../App.css'
 import axios from 'axios'
 
-export default class newPost extends Component{
+export default class NewComment extends Component{
     constructor(props) {
         super(props);
         this.state={
             title: "",
             content: "",
-            published: "",
             imageUrl: "",
-            linkDescription: "",
-            loggedInUserId: this.props.loggedInUserId
+            author: "",
+            authorId: this.props.authorId,
+            postId: this.props.postId,
         }
     }
-
 
     validURL = (str)=> {
         var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
@@ -26,20 +25,21 @@ export default class newPost extends Component{
         return !!pattern.test(str);
     }
 
-    addPost = (e) =>{
-        var {loggedInUserId, title, content, published, imageUrl, linkDescription} = this.state
-        if(title !== "" && content !== "" && published !== "" && imageUrl !== "" && this.validURL(imageUrl)) {
+    addComment = (e) =>{
+        var {postId, authorId, title, content, imageUrl, author} = this.state
+
+        if(title !== "" && content !== "" && author !== "" && imageUrl !== "" && this.validURL(imageUrl)) {
             var jsonPost =
                 {
                     "title": title,
                     "content": content,
-                    "published": published,
+                    "author": author,
                     "imageUrl": imageUrl,
-                    "linkDescription": linkDescription,
-                    "loggedInUserId": loggedInUserId,
+                    "authorId": authorId,
+                    "postId": postId
                 }
             //const deployUrl = "/posts"
-            const localUrl = "http://localhost:5000/posts"
+            const localUrl = "http://localhost:5000/comment"
 
             axios.post(localUrl, jsonPost)
                 .then((res) => {
@@ -47,7 +47,7 @@ export default class newPost extends Component{
                         this.setState({
                             resp: true
                         });
-                        this.props.history.push('/')
+                        window.location.reload(false);
                     }
                 })
                 .catch(er => {
@@ -58,30 +58,25 @@ export default class newPost extends Component{
         }
     }
 
-    changeContent = (e) =>{
-        this.setState({
-            content: e.target.value
-        })
-    }
 
     render(){
         return (
             <div>
-                <h1>Create New Post</h1>
+                <h1>Create New Comment</h1>
                 <input
-                    type="text" name="postTitle" placeholder="Post title goes here.."
-                    className="newPostTitle" required
+                    type="text" name="commentTitle" placeholder="Comment title goes here"
+                    className="commentTitle" required
                     onChange={(e)=>{this.setState({title: e.target.value})}}
                 />
                 <br/><br/>
-                <input name="postContent" placeholder="Post content goes here.."
-                    className="newPostBody" required
-                    onChange={this.changeContent}
+                <input name="commentContent" placeholder="Comment content goes here"
+                       className="commentContent" required
+                       onChange={(e)=>{this.setState({content: e.target.value})}}
                 />
                 <br/>
                 <input name="published" placeholder="author name goes here"
                        className="newPostTitle"
-                       onChange={(e)=>{this.setState({published: e.target.value})}}
+                       onChange={(e)=>{this.setState({author: e.target.value})}}
                 />
                 <br/>
                 <input name="imageUrl" placeholder="image url goes here"
@@ -94,7 +89,7 @@ export default class newPost extends Component{
                        onChange={(e)=>{this.setState({linkDescription: e.target.value})}}
                 />
                 <br/>
-                <button type="submit" onClick={this.addPost}>Save Post</button>
+                <button type="submit" onClick={this.addComment}>Save Comment</button>
             </div>
         )
     }
