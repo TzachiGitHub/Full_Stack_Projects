@@ -38,9 +38,8 @@ export default class newPost extends Component{
                     "linkDescription": linkDescription,
                     "loggedInUserId": loggedInUserId,
                 }
-            //const deployUrl = "/posts"
+            // const deployUrl = "/posts"
             const localUrl = "http://localhost:5000/posts"
-
             axios.post(localUrl, jsonPost)
                 .then((res) => {
                     if (res.status === 200) {

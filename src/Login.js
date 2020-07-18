@@ -28,7 +28,7 @@ export default class Login extends React.Component{
             username: username,
             password: password
             }
-        //const deployUrl = '/login'
+        // const deployUrl = '/login'
         const localUrl = 'http://127.0.0.1:5000/login'
 
         axios.post(localUrl, jsonData)

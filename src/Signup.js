@@ -26,9 +26,8 @@ export default class Signup extends React.Component{
             username: username,
             password: password
         }
-        //const deployUrl = '/signup';
+        // const deployUrl = '/signup';
         const localUrl = 'http://127.0.0.1:5000/signup';
-
         axios.post(localUrl, data)
             .then((res)=> {
                 if(res.status === 200){

@@ -1,6 +1,5 @@
 {
   "name": "blogui",
-  "homepage": "https://tzachigithub.github.io/Full_Stack_Projects/.",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

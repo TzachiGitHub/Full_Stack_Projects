@@ -38,17 +38,17 @@ export default class NewComment extends Component{
                     "authorId": authorId,
                     "postId": postId
                 }
-            //const deployUrl = "/posts"
+            // const deployUrl = "/comment"
             const localUrl = "http://localhost:5000/comment"
-
             axios.post(localUrl, jsonPost)
                 .then((res) => {
                     if (res.status === 200) {
                         this.setState({
                             resp: true
                         });
-                        window.location.reload(false);
+                     //   this.props.onSuccess()
                     }
+                    window.location.reload(false)
                 })
                 .catch(er => {
                     console.log(er)
@@ -89,7 +89,7 @@ export default class NewComment extends Component{
                        onChange={(e)=>{this.setState({linkDescription: e.target.value})}}
                 />
                 <br/>
-                <button type="submit" onClick={this.addComment}>Save Comment</button>
+                <button onClick={this.addComment}>Save Comment</button>
             </div>
         )
     }

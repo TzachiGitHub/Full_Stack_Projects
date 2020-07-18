@@ -25,12 +25,12 @@ export default class SinglePost extends React.Component{
 
     deletePost = () =>{
         const localDeleteUrl = "http://localhost:5000/deletePost"
+        // const deployDeleteUrl = "/deletePost"
         const data = this.props.post
         axios.post(localDeleteUrl, data)
             .then(res=>{
                 if(res.status === 200){
                     alert("Post Deleted Successfully!")
-                    window.location.reload(false);
                 }
             })
             .catch(er=>{
@@ -52,13 +52,13 @@ export default class SinglePost extends React.Component{
                     <p>published by {published}.</p>
                     <div className="postLinks">
                         <div className="FullPostLink">
-                            <Link onClick={(props)=>{this.props.setCurrentPost(this.props.post)}} to={location => `/post/${id}`}>View Full Post</Link>
+                            <Link onClick={(props)=>{this.props.setCurrentPost(this.props.post)}} to={location => `/posts/${id}`}>View Full Post</Link>
                         </div>
                         {isLoggedIn &&
                             (loggedInUserId === authorId) &&
 
                             <div id="deletePostLink">
-                                <Link onClick={this.deletePost} to="/">Delete Post</Link>
+                                <Link onClick={this.deletePost} to="/about">Delete Post</Link>
                             </div>
                         }
                     </div>

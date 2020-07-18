@@ -25,6 +25,11 @@ export default class SinglePost extends Component {
         this.setState({
             newCommentButton: !this.state.newCommentButton
         })
+
+    }
+
+    onNewCommentSuccess = (e) =>{
+        window.location.reload(false)
     }
 
 
@@ -33,6 +38,7 @@ export default class SinglePost extends Component {
             isLoggedIn: this.props.isLoggedIn
         })
         const localUrlGetPost = 'http://localhost:5000/post/' + this.state.postId
+        // const deployUrlGetPost = '/post/' + this.state.postId
         axios.get(localUrlGetPost)
             .then((res) => {
                 if (res.status === 200) {
@@ -66,6 +72,7 @@ export default class SinglePost extends Component {
 
     deletePost = () =>{
         const localDeleteUrl = "http://localhost:5000/deletePost"
+        // const deployDeleteUrl = "/deletePost"
         const data = this.state.post
         axios.post(localDeleteUrl, data)
             .then(res=>{
@@ -110,7 +117,7 @@ export default class SinglePost extends Component {
                         }
                         {isLoggedIn && this.state.newCommentButton &&
                         <div>
-                            <NewComment postId={this.state.post.id} authorId={this.state.loggedInUserId}/>
+                            <NewComment postId={this.state.post.id} authorId={this.state.loggedInUserId} onSuccess={this.onNewCommentSuccess}/>
                             <button onClick={this.onNewCommentButtonClick}>Cancel New Comment</button>
                         </div>
                         }

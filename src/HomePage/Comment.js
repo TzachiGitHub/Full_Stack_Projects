@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import './../App.css'
 import axios from 'axios'
+import {Link} from "react-router-dom";
 
 export default class Comment extends Component{
     constructor(props) {
@@ -21,6 +22,7 @@ export default class Comment extends Component{
 
     onEditSubmit = ()=> {
         const localEditCommentUrl = "http://localhost:5000/comment/edit"
+        // const deployEditCommentUrl = "/comment/edit"
         const {loggedInUserId, commentId, title, content, imageUrl, author} = this.state
         const data = {
             title: title,
@@ -43,6 +45,17 @@ export default class Comment extends Component{
             })
     }
 
+    onEditComment = ()=>{
+        if(this.state.loggedInUserId) {
+            this.setState({
+                currentlyEditing: !this.state.currentlyEditing
+            })
+        }else{
+            alert("Please Login first")
+        }
+    }
+
+
     onCancelEdit = () => {
         const {title, content, imageUrl, author, loggedInUserId} = this.props.comment
         this.setState({
@@ -57,6 +70,7 @@ export default class Comment extends Component{
     onDeleteComment = ()=>{
         const {loggedInUserId, commentId} = this.state
         const localDeleteCommentUrl = "http://localhost:5000/comment/delete"
+        // const deployDeleteCommentUrl = "/comment/delete"
         const data ={
             commentId: commentId,
             loggedInUserId: loggedInUserId,
@@ -67,7 +81,7 @@ export default class Comment extends Component{
                     this.setState({
                         currentlyEditing: false
                     })
-                    window.location.reload(false)
+                    this.props.history.push("/")
                 }
             })
             .catch(er=>{
@@ -79,6 +93,7 @@ export default class Comment extends Component{
         const {currentlyEditing, title, content, imageUrl, author, loggedInUserId, commentAuthorId} = this.state
 
         if(this.state){
+            const postLink = "/posts/" + this.state.comment['postId']
             return (
                 <div className="col-md-4 mb-4">
                     {!currentlyEditing &&
@@ -90,17 +105,20 @@ export default class Comment extends Component{
                             <h5 className="card-title">{title}</h5>
                             <p className="card-text">{content}</p>
                             <p className="card-text, published">{author}</p>
-                            {loggedInUserId && loggedInUserId == commentAuthorId &&
+                            {loggedInUserId && loggedInUserId === commentAuthorId &&
                             <div>
                                 <button
                                     onClick={() => this.setState({currentlyEditing: true})}
                                     className="btn btn-outline-success btn-sm">
                                         Edit Comment
                                 </button>
-                                <button onClick={this.onDeleteComment} className="btn btn-outline-danger btn-sm">
+                                <Link to={postLink} onClick={this.onDeleteComment} className="btn btn-outline-danger btn-sm">
                                     Delete Comment
-                                </button>
+                                </Link>
                             </div>
+                            }
+                            { loggedInUserId == commentAuthorId &&
+                                <button onClick={this.onEditComment}>Edit Comment</button>
                             }
                         </div>
                     </div>

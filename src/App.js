@@ -21,13 +21,13 @@ import {
 export default class App extends React.Component{
     constructor(props) {
         super(props);
-        this.state ={
+        this.state ={   
             isLoggedIn: false,
             username: "",
             loggedInUserId: null,
             currentPost: null
         }
-        console.log(Cookie.get())
+
         this.handleLogin = this.handleLogin.bind(this);
         this.getUserId = this.getUserId.bind(this);
         this.logOut = this.logOut.bind(this);
@@ -39,14 +39,13 @@ export default class App extends React.Component{
             isLoggedIn: loginData.isLoggedIn,
         })
         Cookie.set(loginData.cookie)
-        console.log(loginData.cookie)
         this.getUserId(loginData.username);
     }
 
     getUserId = (username)=>{
         //get the username's id
         const localUrl = "http://localhost:5000/getUserId/" + username
-        //const deployUrl = '/getUserId/' + id;
+        // const deployUrl = '/getUserId/' + username;
         axios.get(localUrl)
             .then((res)=> {
                 if (res.status === 200) {
@@ -66,19 +65,23 @@ export default class App extends React.Component{
     }
 
     logOut = ()=>{
-        this.setState({
-            loggedInUserId: null,
-            isLoggedIn: false,
-            username: ""
-        })
-        //const deployUrl = '/logout/' + this.state.id;
-        const localUrl = 'http://127.0.0.1:5000/logout/' + this.state.loggedInUserId;
-
-        axios.post(localUrl)
+        // const deployUrl = '/randomText/logout/' + this.state.loggedInUserId;
+        const localUrl = 'http://127.0.0.1:5000/randomText/logout/' + this.state.loggedInUserId;
+        const validationData = {
+            username: this.state.username,
+            loggedInUserId: this.state.loggedInUserId
+        }
+        axios.post(localUrl,validationData)
             .then(res => {
                 if (res.status === 200) {
+                    this.setState({
+                        loggedInUserId: null,
+                        isLoggedIn: false,
+                        username: ""
+                    })
                     alert("Logout Successfully!")
                 }
+
             }).catch(err => {
                 console.log(err)
                 console.log("Something went wrong with the logout, please try again")
@@ -92,7 +95,7 @@ export default class App extends React.Component{
                 <Header loggedInUserId={loggedInUserId} isloggedIn={isLoggedIn} logOut={this.logOut} username={username}/>
                 <Switch>
                     <Route path="/about" component={AboutMe}/>
-                    <Route path='/post/:id' component={(props)=><OnlyPostPage {...props} currentPost={currentPost} loggedInUserId={loggedInUserId} isLoggedIn={isLoggedIn}/>}/>
+                    <Route path='/posts/:id' component={(props)=><OnlyPostPage {...props} currentPost={currentPost} loggedInUserId={loggedInUserId} isLoggedIn={isLoggedIn}/>}/>
                     <Route path="/Signup" render={(props) => <Signup {...props} handleLogin={this.handleLogin}/>}/>
                     <Route path="/login" component={(props) => <Login {...props} handleLogin={this.handleLogin}/>}/>
                     <Route path="/logout" component={this.logout}/>
