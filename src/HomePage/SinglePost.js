@@ -17,6 +17,7 @@ export default class SinglePost extends React.Component{
 
     componentDidMount(){
         this.setState({
+            post: this.props.post,
             loggedInUserId: this.props.loggedInUserId,
             isLoggedIn: this.props.isLoggedIn,
             setCurrentPost: this.props.setCurrentPost
@@ -32,6 +33,7 @@ export default class SinglePost extends React.Component{
                 if(res.status === 200){
                     alert("Post Deleted Successfully!")
                 }
+                window.location.reload(false)
             })
             .catch(er=>{
                 console.log(er)
@@ -40,7 +42,7 @@ export default class SinglePost extends React.Component{
 
     render() {
         var {isLoggedIn, loggedInUserId} = this.state
-        var {id, imageUrl, title, content, published, linkDescription, authorId} = this.props.post
+        var {imageUrl, title, content, published, linkDescription, authorId} = this.props.post
         linkDescription = (linkDescription !== "") ? linkDescription : "X"
 
         return (
@@ -52,13 +54,13 @@ export default class SinglePost extends React.Component{
                     <p>published by {published}.</p>
                     <div className="postLinks">
                         <div className="FullPostLink">
-                            <Link onClick={(props)=>{this.props.setCurrentPost(this.props.post)}} to={location => `/posts/${id}`}>View Full Post</Link>
+                            <Link onClick={(props)=>{this.props.setCurrentPost(this.props.post)}} to='/post'>View Full Post</Link>
                         </div>
                         {isLoggedIn &&
                             (loggedInUserId === authorId) &&
 
                             <div id="deletePostLink">
-                                <Link onClick={this.deletePost} to="/about">Delete Post</Link>
+                                <Link onClick={this.deletePost} to="/">Delete Post</Link>
                             </div>
                         }
                     </div>

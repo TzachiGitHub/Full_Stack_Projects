@@ -18,7 +18,6 @@ export default class EditPost extends React.Component{
     }
 
     updatePost = ()=>{
-        const id = this.state.id
         const localUpdateUrl = "http://localhost:5000/editPost"
         // const deployUpdateUrl = "/editPost"
         const updatedPost = {

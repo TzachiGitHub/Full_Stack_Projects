@@ -65,11 +65,12 @@ export default class App extends React.Component{
     }
 
     logOut = ()=>{
-        // const deployUrl = '/randomText/logout/' + this.state.loggedInUserId;
-        const localUrl = 'http://127.0.0.1:5000/randomText/logout/' + this.state.loggedInUserId;
+        const {loggedInUserId} = this.state
+        // const deployUrl = '/randomText/logout/' + loggedInUserId;
+        const localUrl = 'http://127.0.0.1:5000/randomText/logout/' + loggedInUserId;
         const validationData = {
             username: this.state.username,
-            loggedInUserId: this.state.loggedInUserId
+            loggedInUserId: loggedInUserId
         }
         axios.post(localUrl,validationData)
             .then(res => {
@@ -95,7 +96,7 @@ export default class App extends React.Component{
                 <Header loggedInUserId={loggedInUserId} isloggedIn={isLoggedIn} logOut={this.logOut} username={username}/>
                 <Switch>
                     <Route path="/about" component={AboutMe}/>
-                    <Route path='/posts/:id' component={(props)=><OnlyPostPage {...props} currentPost={currentPost} loggedInUserId={loggedInUserId} isLoggedIn={isLoggedIn}/>}/>
+                    <Route path='/post' component={(props)=><OnlyPostPage {...props} currentPost={currentPost} loggedInUserId={loggedInUserId} isLoggedIn={isLoggedIn}/>}/>
                     <Route path="/Signup" render={(props) => <Signup {...props} handleLogin={this.handleLogin}/>}/>
                     <Route path="/login" component={(props) => <Login {...props} handleLogin={this.handleLogin}/>}/>
                     <Route path="/logout" component={this.logout}/>

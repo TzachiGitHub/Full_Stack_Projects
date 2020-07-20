@@ -18,7 +18,7 @@ export default class Posts extends Component{
 
     componentDidMount(){
         const localUrl = "http://localhost:5000/posts"
-        //const deployUrl = "/post"
+        // const deployUrl = "/posts"
         axios.get(localUrl).then((res) => {
             if (res.status === 200) {
                 this.setState({
@@ -26,7 +26,10 @@ export default class Posts extends Component{
                     resp: true
                 });
             }
-        });
+        })
+            .catch(er=>{
+                console.log(er)
+            })
     }
 
     render(){
@@ -38,6 +41,7 @@ export default class Posts extends Component{
                     {resp &&
                     data.map((post) => {
                         return <SinglePost
+                            key={post.id}
                             post={post}
                             loggedInUserId={loggedInUserId}
                             isLoggedIn={isLoggedIn}

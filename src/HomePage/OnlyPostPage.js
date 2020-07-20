@@ -5,12 +5,12 @@ import Comment from './Comment'
 import NewComment from '../Comments/NewComment'
 import './../App.css'
 
-export default class SinglePost extends Component {
+export default class OnlyPostPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
             postId: props.match.params.id,
-            post: [],
+            post: props.currentPost,
             comments: [],
             resp: false,
             loggedInAsPostAuthor: false,
@@ -19,55 +19,53 @@ export default class SinglePost extends Component {
             newCommentButton: false,
         }
         this.getComments = this.getComments.bind(this)
+        this.onNewCommentButtonClick = this.onNewCommentButtonClick.bind(this)
     }
 
     onNewCommentButtonClick = (e)=>{
         this.setState({
             newCommentButton: !this.state.newCommentButton
         })
-
     }
 
     onNewCommentSuccess = (e) =>{
-        window.location.reload(false)
+        this.setState({
+            newCommentButton: false
+        })
+        this.componentDidMount()
     }
 
 
     componentDidMount() {
-        this.setState({
-            isLoggedIn: this.props.isLoggedIn
-        })
-        const localUrlGetPost = 'http://localhost:5000/post/' + this.state.postId
-        // const deployUrlGetPost = '/post/' + this.state.postId
-        axios.get(localUrlGetPost)
-            .then((res) => {
-                if (res.status === 200) {
-                    this.setState({
-                        post: res.data,
-                        loggedInAsPostAuthor: (this.state.loggedInUserId == res.data.authorId) ? true : false,
-                    })
-                    this.getComments(res.data)
-                }
+        if(this.props.currentPost) {
+            this.setState({
+                isLoggedIn: this.props.isLoggedIn,
+                loggedInAsPostAuthor: (this.props.loggedInUserId === this.props.currentPost.authorId) ? true : false,
             })
-            .catch(er=>{
-                console.log(er)
-            });
+            this.getComments()
+        }
     }
 
-    getComments = (post) => {
-        const localCommentsUrl = "http://localhost:5000/comments/" + post.id
-        axios.get(localCommentsUrl)
-            .then(commentResponse => {
-                if (commentResponse.status === 200) {
-                    this.setState({
-                        comments: commentResponse.data,
-                        resp: true,
-                    })
-                }
-            })
-            .catch(er => {
-                console.log(er)
-            })
+    getComments = () => {
+        const {post} = this.state
+        if(post) {
+            const localCommentsUrl = "http://localhost:5000/comments/" + post.id
+            // const deployCommentsUrl = "/comments/" + post.id
+            axios.get(localCommentsUrl)
+                .then(commentResponse => {
+                    if (commentResponse.status === 200) {
+                        this.setState({
+                            comments: commentResponse.data,
+                            resp: true,
+                        })
+                    }
+                })
+                .catch(er => {
+                    console.log(er)
+                })
+        }else{
+            console.log("the OnlyPostPage didn't receive the currentPost object")
+        }
     }
 
     deletePost = () =>{
@@ -87,9 +85,8 @@ export default class SinglePost extends Component {
     }
 
     render() {
-        var {postId, resp, post, isLoggedIn, comments, loggedInUserId, loggedInAsPostAuthor} = this.state;
-
-        if(resp) {
+        var {post, isLoggedIn, comments, loggedInUserId, loggedInAsPostAuthor} = this.state
+        if(post) {
             return (
                 <div>
                     <div className="post">
@@ -103,21 +100,22 @@ export default class SinglePost extends Component {
                         <>
                             <Link to="/editPost">Edit Post</Link>
                             <span> | </span>
-                            <Link onClick={this.deletePost} to="/">Delete Post</Link>
+                            <Link onClick={this.deletePost} to="/home">Delete Post</Link>
                         </>}
                     </div>
                     <section id="gallery">
                         <div className="container">
                             {comments.map(comment => {
-                                return <Comment {...this.props} comment={comment} commentAuthorId={post.authorId} loggedInUserId={loggedInUserId}/>
+                                return <Comment {...this.props} comment={comment} loggedInUserId={loggedInUserId}/>
                             })}
                         </div>
                         {isLoggedIn && !this.state.newCommentButton &&
-                            <button onClick={this.onNewCommentButtonClick}>Add New Comment</button>
+                        <button onClick={this.onNewCommentButtonClick}>Add New Comment</button>
                         }
                         {isLoggedIn && this.state.newCommentButton &&
                         <div>
-                            <NewComment postId={this.state.post.id} authorId={this.state.loggedInUserId} onSuccess={this.onNewCommentSuccess}/>
+                            <NewComment postId={this.state.post.id} authorId={this.state.loggedInUserId}
+                                        onSuccess={this.onNewCommentSuccess}/>
                             <button onClick={this.onNewCommentButtonClick}>Cancel New Comment</button>
                         </div>
                         }
@@ -125,7 +123,12 @@ export default class SinglePost extends Component {
                 </div>
             )
         }else{
-            return <p> Loading.. </p>
+            return (
+                <div>
+                    <p>Please go to the Home Page:</p>
+                    <Link to="/">HomePage</Link>
+                </div>
+            )
         }
     }
 }

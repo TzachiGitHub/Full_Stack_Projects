@@ -15,20 +15,11 @@ pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_size=3
 )
 
-# db = mysql.connect(
-# 	host="localhost",
-# 	user="root",
-# 	passwd="FUCKOFF8665",
-# 	database="blog",
-#     buffered = True
-# )
-
-
 # AWS production development:
 # pool = mysql.connector.pooling.MySQLConnectionPool(
 #     pool_name="pool",
 #     host="my-rds.cdl39yfkqbt1.us-east-1.rds.amazonaws.com",
-#     # port=3306,
+#     port=3306,
 #     user="admin",
 #     passwd="password",
 #     database="blog",
@@ -46,7 +37,7 @@ pool = mysql.connector.pooling.MySQLConnectionPool(
 # )
 
 # app = Flask(__name__,
-#             static_folder='../build',
+#             static_folder='/home/ubuntu/build',
 #             static_url_path='/')
 
 app = Flask(__name__)
@@ -76,13 +67,13 @@ def manage_posts():
 
 @app.route('/comments/<post_id>', methods=['GET'])
 def get_comments(post_id):
-    query = "select id, title, content, imageUrl, author, author_id from comments where post_id=%s"
+    query = "select id, title, content, author, imageUrl, author_id, post_id from comments where post_id=%s"
     values = (post_id, )
     cursor = g.db.cursor()
     cursor.execute(query, values)
     records = cursor.fetchall()
     cursor.close()
-    header = ['id', 'title', 'content', 'imageUrl', 'author', 'authorId']
+    header = ['id', 'title', 'content', 'author', 'imageUrl', 'authorId', 'postId']
     data = []
     for r in records:
         data.append(dict(zip(header, r)))
@@ -201,7 +192,7 @@ def delete_comment():
 @app.route('/post/<id>', methods=['GET'])
 def get_post(id):
     query = "select id, title, content, linkDescription, imageUrl, published, author_id from posts where id = %s"
-    values = (id,)
+    values = [str(id)]
     cursor = g.db.cursor()
     cursor.execute(query, values)
     record = cursor.fetchone()
@@ -345,5 +336,5 @@ def get_all_posts():
     return json.dumps(data)
 
 
-# if __name__ == "__main__":
-app.run()
+if __name__ == "__main__":
+    app.run()

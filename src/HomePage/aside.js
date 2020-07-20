@@ -32,14 +32,10 @@ var populaPosts = [
 ]
 var SidePosts = (props) =>{
     return (
-        props.posts.map((post)=>{
+        props.posts.map((post, i)=>{
             return(
-                <>
-                <li> {post.content}<a href={post.link}>go to page</a></li>
-                <br/>
-                </>
+                <li key={i}> {post.content}<a href={post.link}>go to page</a></li>
                 )
-
         })
     )
 }
@@ -49,14 +45,16 @@ var finalPosts = () => {
                 <h1>Latest</h1>
                 <ul>
                     <SidePosts
-                    posts={latestPosts}/>
+                        key={1}
+                        posts={latestPosts}/>
                 </ul>
                 <br/>
                 <hr className="line"/>
                 <h1>Popular</h1>
                 <ul>
                     <SidePosts
-                    posts={populaPosts}/>
+                        key={2}
+                        posts={populaPosts}/>
                 </ul>
             </div>
     )

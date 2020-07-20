@@ -42,13 +42,8 @@ export default class NewComment extends Component{
             const localUrl = "http://localhost:5000/comment"
             axios.post(localUrl, jsonPost)
                 .then((res) => {
-                    if (res.status === 200) {
-                        this.setState({
-                            resp: true
-                        });
-                     //   this.props.onSuccess()
-                    }
-                    window.location.reload(false)
+                    console.log("we are in the onComment")
+                    this.props.onSuccess()
                 })
                 .catch(er => {
                     console.log(er)
