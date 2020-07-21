@@ -222,9 +222,16 @@ def signup():
         cursor.execute(insert_query, insert_values)
         g.db.commit()
         cursor.close()
+        query_id = "select id from users where username=%s"
+        values_id = (username, )
+        cursor = g.db.cursor()
+        cursor.execute(query_id, values_id)
+        user_id = cursor.fetchone()[0]
+        cursor.close()
         session_id = str(uuid.uuid4())
         response = make_response()
         response.set_cookie("session_id", session_id)
+        response = {"userId": user_id}
         return response
 
 
@@ -254,7 +261,7 @@ def login():
     sessionValues = (user_id, session_id, session_id)
     cursor.execute(sessionQuery, sessionValues)
     g.db.commit()
-    user_data = {"username": username, "userId": user_id}
+    user_data = {"userId": user_id}
     response = make_response(user_data)
     response.set_cookie("session_id", session_id)
     cursor.close()

@@ -8,7 +8,7 @@ export default class newPost extends Component{
         this.state={
             title: "",
             content: "",
-            published: "",
+            published: this.props.username,
             imageUrl: "",
             linkDescription: "",
             loggedInUserId: this.props.loggedInUserId
@@ -38,9 +38,9 @@ export default class newPost extends Component{
                     "linkDescription": linkDescription,
                     "loggedInUserId": loggedInUserId,
                 }
-            const deployUrl = "/posts"
-            // const localUrl = "http://localhost:5000/posts"
-            axios.post(deployUrl, jsonPost)
+            // const deployUrl = "/posts"
+            const localUrl = "http://localhost:5000/posts"
+            axios.post(localUrl, jsonPost)
                 .then((res) => {
                     if (res.status === 200) {
                         this.setState({
@@ -65,35 +65,41 @@ export default class newPost extends Component{
 
     render(){
         return (
-            <div>
+            <div className="form-group">
                 <h1>Create New Post</h1>
+                <span>Title: </span>
                 <input
-                    type="text" name="postTitle" placeholder="Post title goes here.."
-                    className="newPostTitle" required
+                    type="text" name="postTitle" placeholder="typing.."
+                    className="form-control" required
                     onChange={(e)=>{this.setState({title: e.target.value})}}
                 />
                 <br/><br/>
-                <input name="postContent" placeholder="Post content goes here.."
-                    className="newPostBody" required
-                    onChange={this.changeContent}
+                <span>Content: </span>
+                <input
+                    name="postContent"
+                    placeholder="typing.."
+                    className="form-control" required
+                    id="newPostBody"
+                    onChange={(e)=>{this.setState({content: e.target.value})}}
+                />
+                <br/><br/>
+                <span>Image Url: </span>
+                <input
+                    name="imageUrl"
+                    placeholder="www..."
+                    className="form-control"
+                    onChange={(e)=>{this.setState({imageUrl: e.target.value})}}
                 />
                 <br/>
-                <input name="published" placeholder="author name goes here"
-                       className="newPostTitle"
-                       onChange={(e)=>{this.setState({published: e.target.value})}}
+                <span>link descriptio(optional): </span>
+                <input
+                    name="linkDescription"
+                    placeholder="typing.."
+                    className="form-control"
+                    onChange={(e)=>{this.setState({linkDescription: e.target.value})}}
                 />
                 <br/>
-                <input name="imageUrl" placeholder="image url goes here"
-                       className="newPostTitle"
-                       onChange={(e)=>{this.setState({imageUrl: e.target.value})}}
-                />
-                <br/>
-                <input name="linkDescription" placeholder="optional: adding link description (if the link is offline)"
-                       className="newPostTitle"
-                       onChange={(e)=>{this.setState({linkDescription: e.target.value})}}
-                />
-                <br/>
-                <button type="submit" onClick={this.addPost}>Save Post</button>
+                <button type="submit" className="btn btn-primary" id="new-post-submit-button" onClick={this.addPost}>Save Post</button>
             </div>
         )
     }

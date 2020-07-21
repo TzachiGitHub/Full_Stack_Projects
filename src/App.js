@@ -22,14 +22,13 @@ export default class App extends React.Component{
     constructor(props) {
         super(props);
         this.state ={   
-            isLoggedIn: false,
-            username: "",
-            loggedInUserId: null,
+            isLoggedIn: Cookie.get('username') != null,
+            username: Cookie.get('username') || "",
+            loggedInUserId: Cookie.get('loggedInUserId') || null,
             currentPost: null
         }
-
+        console.log()
         this.handleLogin = this.handleLogin.bind(this);
-        this.getUserId = this.getUserId.bind(this);
         this.logOut = this.logOut.bind(this);
     }
 
@@ -37,25 +36,10 @@ export default class App extends React.Component{
         this.setState({
             username: loginData.username,
             isLoggedIn: loginData.isLoggedIn,
+            loggedInUserId: loginData.loggedInUserId,
         })
-        Cookie.set(loginData.cookie)
-        this.getUserId(loginData.username);
-    }
-
-    getUserId = (username)=>{
-        //get the username's id
-        // const localUrl = "http://localhost:5000/getUserId/" + username
-        const deployUrl = '/getUserId/' + username;
-        axios.get(deployUrl)
-            .then((res)=> {
-                if (res.status === 200) {
-                    this.setState({
-                        loggedInUserId: res.data.id
-                    })
-                }
-            }).catch((err) => {
-            console.log(err)
-        })
+        Cookie.set("loggedInUserId", this.state.loggedInUserId)
+        Cookie.set("username", this.state.username)
     }
 
     setCurrentPost = (post)=>{
@@ -66,13 +50,13 @@ export default class App extends React.Component{
 
     logOut = ()=>{
         const {loggedInUserId} = this.state
-        const deployUrl = '/randomText/logout/' + loggedInUserId;
-        // const localUrl = 'http://127.0.0.1:5000/randomText/logout/' + loggedInUserId;
+        // const deployUrl = '/randomText/logout/' + loggedInUserId;
+        const localUrl = 'http://127.0.0.1:5000/randomText/logout/' + loggedInUserId;
         const validationData = {
             username: this.state.username,
             loggedInUserId: loggedInUserId
         }
-        axios.post(deployUrl,validationData)
+        axios.post(localUrl,validationData)
             .then(res => {
                 if (res.status === 200) {
                     this.setState({
@@ -80,6 +64,8 @@ export default class App extends React.Component{
                         isLoggedIn: false,
                         username: ""
                     })
+                    Cookie.remove("username")
+                    Cookie.remove("loggedInUserId")
                     alert("Logout Successfully!")
                 }
 
@@ -100,7 +86,7 @@ export default class App extends React.Component{
                     <Route path="/Signup" render={(props) => <Signup {...props} handleLogin={this.handleLogin}/>}/>
                     <Route path="/login" component={(props) => <Login {...props} handleLogin={this.handleLogin}/>}/>
                     <Route path="/logout" component={this.logout}/>
-                    <Route path="/newPost" component={(props)=> isLoggedIn ? <NewPost {...props} loggedInUserId={loggedInUserId}/> : <Redirect to={'/login'}/>}/>}
+                    <Route path="/newPost" component={(props)=> true ? <NewPost {...props} username={username} loggedInUserId={loggedInUserId}/> : <Redirect to={'/login'}/>}/>}
                     <Route path="/editPost" component={(props)=> isLoggedIn ? <EditPost {...props} currentPost={currentPost} username={username}/> : <Redirect to={'/login'}/>}/>
                     <Route path="/" component={(props)=><Home {...props} isLoggedIn={isLoggedIn} loggedInUserId={this.state.loggedInUserId} setCurrentPost={this.setCurrentPost}/>}/>
                 </Switch>

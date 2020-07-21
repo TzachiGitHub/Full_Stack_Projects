@@ -22,8 +22,8 @@ export default class Comment extends Component{
     }
 
     onEditSubmit = ()=> {
-        // const localEditCommentUrl = "http://localhost:5000/comment/edit"
-        const deployEditCommentUrl = "/comment/edit"
+        const localEditCommentUrl = "http://localhost:5000/comment/edit"
+        // const deployEditCommentUrl = "/comment/edit"
         const {loggedInUserIdString, commentId, title, content, imageUrl, author} = this.state
         const data = {
             title: title,
@@ -33,7 +33,7 @@ export default class Comment extends Component{
             loggedInUserId: loggedInUserIdString,
             commentId: commentId,
         }
-        axios.post(deployEditCommentUrl, data)
+        axios.post(localEditCommentUrl, data)
             .then(res=>{
                 if(res.status === 200){
                     this.setState({

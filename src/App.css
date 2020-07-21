@@ -136,13 +136,21 @@ li {
   width: 90%;
 }
 
-.newPostBody{
-  width: 20%;
-  height: 20em;
+#newPostBody{
+  height: 10em;
 }
 
 .newPostTitle{
   width: 20%;
+}
+
+.form-group{
+  margin-left: 10em;
+  margin-right: 10em;
+}
+
+#new-post-submit-button{
+
 }
 
 .strongText{

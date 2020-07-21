@@ -26,16 +26,16 @@ export default class Signup extends React.Component{
             username: username,
             password: password
         }
-        const deployUrl = '/signup';
-        // const localUrl = 'http://127.0.0.1:5000/signup';
-        axios.post(deployUrl, data)
+        // const deployUrl = '/signup';
+        const localUrl = 'http://127.0.0.1:5000/signup';
+        axios.post(localUrl, data)
             .then((res)=> {
                 if(res.status === 200){
-                    // alert("Success! signed in perfectly!")
-                    // console.log("0:signup form submitted");
+                    console.log(res)
                     var loginData = {
                         username: this.state.username,
-                        isLoggedIn: true
+                        isLoggedIn: true,
+                        loggedInUserId: res.data.userId
                     }
                     //calling the handleLogin function from the App.js class - to save the userData and pass it on
                     this.props.handleLogin(loginData, this.props)

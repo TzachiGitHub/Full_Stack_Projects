@@ -49,9 +49,9 @@ export default class OnlyPostPage extends Component {
     getComments = () => {
         const {post} = this.state
         if(post) {
-            // const localCommentsUrl = "http://localhost:5000/comments/" + post.id
-            const deployCommentsUrl = "/comments/" + post.id
-            axios.get(deployCommentsUrl)
+            const localCommentsUrl = "http://localhost:5000/comments/" + post.id
+            // const deployCommentsUrl = "/comments/" + post.id
+            axios.get(localCommentsUrl)
                 .then(commentResponse => {
                     if (commentResponse.status === 200) {
                         this.setState({
@@ -69,10 +69,10 @@ export default class OnlyPostPage extends Component {
     }
 
     deletePost = () =>{
-        // const localDeleteUrl = "http://localhost:5000/deletePost"
-        const deployDeleteUrl = "/deletePost"
+        const localDeleteUrl = "http://localhost:5000/deletePost"
+        // const deployDeleteUrl = "/deletePost"
         const data = this.state.post
-        axios.post(deployDeleteUrl, data)
+        axios.post(localDeleteUrl, data)
             .then(res=>{
                 if(res.status === 200){
                     alert("Post Deleted Successfully!")
