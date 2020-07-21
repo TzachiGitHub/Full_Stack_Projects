@@ -17,9 +17,9 @@ export default class Posts extends Component{
     }
 
     componentDidMount(){
-        const localUrl = "http://localhost:5000/posts"
-        // const deployUrl = "/posts"
-        axios.get(localUrl).then((res) => {
+        // const localUrl = "http://localhost:5000/posts"
+        const deployUrl = "/posts"
+        axios.get(deployUrl).then((res) => {
             if (res.status === 200) {
                 this.setState({
                     data: res.data,

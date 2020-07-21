@@ -18,8 +18,8 @@ export default class EditPost extends React.Component{
     }
 
     updatePost = ()=>{
-        const localUpdateUrl = "http://localhost:5000/editPost"
-        // const deployUpdateUrl = "/editPost"
+        // const localUpdateUrl = "http://localhost:5000/editPost"
+        const deployUpdateUrl = "/editPost"
         const updatedPost = {
             id: this.state.id,
             imageUrl: this.state.imageUrl,
@@ -29,7 +29,7 @@ export default class EditPost extends React.Component{
             linkDescription: this.state.linkDescription,
             userId: this.state.authorId
         }
-        axios.post(localUpdateUrl, updatedPost)
+        axios.post(deployUpdateUrl, updatedPost)
             .then(res=>{
                 if(res.status === 200){
                     alert("The Post was updated Successfully!")

@@ -22,8 +22,8 @@ export default class Comment extends Component{
     }
 
     onEditSubmit = ()=> {
-        const localEditCommentUrl = "http://localhost:5000/comment/edit"
-        // const deployEditCommentUrl = "/comment/edit"
+        // const localEditCommentUrl = "http://localhost:5000/comment/edit"
+        const deployEditCommentUrl = "/comment/edit"
         const {loggedInUserIdString, commentId, title, content, imageUrl, author} = this.state
         const data = {
             title: title,
@@ -33,7 +33,7 @@ export default class Comment extends Component{
             loggedInUserId: loggedInUserIdString,
             commentId: commentId,
         }
-        axios.post(localEditCommentUrl, data)
+        axios.post(deployEditCommentUrl, data)
             .then(res=>{
                 if(res.status === 200){
                     this.setState({
@@ -70,13 +70,13 @@ export default class Comment extends Component{
 
     onDeleteComment = ()=>{
         const {loggedInUserIdString, commentId} = this.state
-        const localDeleteCommentUrl = "http://localhost:5000/comment/delete"
-        // const deployDeleteCommentUrl = "/comment/delete"
+        // const localDeleteCommentUrl = "http://localhost:5000/comment/delete"
+        const deployDeleteCommentUrl = "/comment/delete"
         const data ={
             commentId: commentId,
             loggedInUserId: loggedInUserIdString,
         }
-        axios.post(localDeleteCommentUrl, data)
+        axios.post(deployDeleteCommentUrl, data)
             .then(res=>{
                 if(res.status === 200){
                     this.setState({
@@ -122,9 +122,6 @@ export default class Comment extends Component{
                                     Delete Comment
                                 </Link>
                             </div>
-                            }
-                            {loggedInUserId === commentAuthorId &&
-                            <button onClick={this.onEditComment}>Edit Comment</button>
                             }
                         </div>
                     </div>

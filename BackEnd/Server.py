@@ -39,9 +39,10 @@ pool = mysql.connector.pooling.MySQLConnectionPool(
 # app = Flask(__name__,
 #             static_folder='/home/ubuntu/build',
 #             static_url_path='/')
-
+#
 app = Flask(__name__)
 CORS(app)
+
 
 @app.before_request
 def before_request():
@@ -95,8 +96,6 @@ def add_comment():
 
 @app.route('/comment/edit', methods=['POST'])
 def edit_comment():
-    # commentId, title, content, author, imageUrl, loggedInUserId
-
     data = request.get_json()
     query_auth = "select author_id from comments where id=%s"
     values_auth = (data['commentId'],)

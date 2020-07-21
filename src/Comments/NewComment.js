@@ -38,9 +38,9 @@ export default class NewComment extends Component{
                     "authorId": authorId,
                     "postId": postId
                 }
-            // const deployUrl = "/comment"
-            const localUrl = "http://localhost:5000/comment"
-            axios.post(localUrl, jsonPost)
+            const deployUrl = "/comment"
+            // const localUrl = "http://localhost:5000/comment"
+            axios.post(deployUrl, jsonPost)
                 .then((res) => {
                     console.log("we are in the onComment")
                     this.props.onSuccess()

@@ -25,10 +25,10 @@ export default class SinglePost extends React.Component{
     }
 
     deletePost = () =>{
-        const localDeleteUrl = "http://localhost:5000/deletePost"
-        // const deployDeleteUrl = "/deletePost"
+        // const localDeleteUrl = "http://localhost:5000/deletePost"
+        const deployDeleteUrl = "/deletePost"
         const data = this.props.post
-        axios.post(localDeleteUrl, data)
+        axios.post(deployDeleteUrl, data)
             .then(res=>{
                 if(res.status === 200){
                     alert("Post Deleted Successfully!")

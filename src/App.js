@@ -44,9 +44,9 @@ export default class App extends React.Component{
 
     getUserId = (username)=>{
         //get the username's id
-        const localUrl = "http://localhost:5000/getUserId/" + username
-        // const deployUrl = '/getUserId/' + username;
-        axios.get(localUrl)
+        // const localUrl = "http://localhost:5000/getUserId/" + username
+        const deployUrl = '/getUserId/' + username;
+        axios.get(deployUrl)
             .then((res)=> {
                 if (res.status === 200) {
                     this.setState({
@@ -66,13 +66,13 @@ export default class App extends React.Component{
 
     logOut = ()=>{
         const {loggedInUserId} = this.state
-        // const deployUrl = '/randomText/logout/' + loggedInUserId;
-        const localUrl = 'http://127.0.0.1:5000/randomText/logout/' + loggedInUserId;
+        const deployUrl = '/randomText/logout/' + loggedInUserId;
+        // const localUrl = 'http://127.0.0.1:5000/randomText/logout/' + loggedInUserId;
         const validationData = {
             username: this.state.username,
             loggedInUserId: loggedInUserId
         }
-        axios.post(localUrl,validationData)
+        axios.post(deployUrl,validationData)
             .then(res => {
                 if (res.status === 200) {
                     this.setState({
