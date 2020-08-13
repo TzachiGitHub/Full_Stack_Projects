@@ -7,12 +7,14 @@ import './../App.css'
 export default class Posts extends Component{
     constructor(props) {
         super(props);
+        const {nickname, isLoggedIn, setCurrentPost, loggedInUserId} = this.props
         this.state={
             data: [],
             resp: false,
-            isLoggedIn: this.props.isLoggedIn,
-            setCurrentPost: this.props.setCurrentPost,
-            loggedInUserId: this.props.loggedInUserId
+            userNickname: nickname,
+            isLoggedIn: isLoggedIn,
+            setCurrentPost: setCurrentPost,
+            loggedInUserId: loggedInUserId,
         };
     }
 
@@ -33,7 +35,7 @@ export default class Posts extends Component{
     }
 
     render(){
-        var {data, resp, isLoggedIn, loggedInUserId, setCurrentPost} = this.state
+        var {data, resp, isLoggedIn, loggedInUserId, setCurrentPost, userNickname} = this.state
 
         if (this.state) {
             return (
@@ -41,6 +43,7 @@ export default class Posts extends Component{
                     {resp &&
                     data.map((post) => {
                         return <SinglePost
+                            userNickname={userNickname}
                             key={post.id}
                             post={post}
                             loggedInUserId={loggedInUserId}

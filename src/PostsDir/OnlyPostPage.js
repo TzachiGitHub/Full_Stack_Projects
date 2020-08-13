@@ -1,23 +1,29 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+import Tags from '../TagsDir/Tags'
 import {Link} from "react-router-dom";
-import Comment from './Comment'
+import Comment from '../Comments/Comment'
 import NewComment from '../Comments/NewComment'
-import './../App.css'
+import '../App.css'
 
 export default class OnlyPostPage extends Component {
     constructor(props) {
         super(props);
+        const {currentPost, isLoggedIn, loggedInUserId} = this.props
         this.state = {
-            postId: props.match.params.id,
-            post: props.currentPost,
+            userNickname: currentPost.author,
+            postId: currentPost.id,
+            post: currentPost,
             comments: [],
+            tags: [],
             resp: false,
-            loggedInAsPostAuthor: false,
-            isLoggedIn: this.props.isLoggedIn,
-            loggedInUserId: this.props.loggedInUserId,
+            loggedInAsPostAuthor: (parseInt(currentPost.authorId) === parseInt(loggedInUserId)),
+            isLoggedIn: isLoggedIn,
+            loggedInUserId: loggedInUserId,
             newCommentButton: false,
         }
+        console.log(this.state)
+        console.log(this.props)
         this.getComments = this.getComments.bind(this)
         this.onNewCommentButtonClick = this.onNewCommentButtonClick.bind(this)
     }
@@ -38,11 +44,40 @@ export default class OnlyPostPage extends Component {
 
     componentDidMount() {
         if(this.props.currentPost) {
-            this.setState({
-                isLoggedIn: this.props.isLoggedIn,
-                loggedInAsPostAuthor: (this.props.loggedInUserId === this.props.currentPost.authorId) ? true : false,
-            })
+            this.getTags()
             this.getComments()
+        }
+    }
+
+    getTags = () => {
+        const {post, loggedInUserId} = this.state
+        if(post){
+            const {postId} = this.state
+            console.log(this.state)
+            const localTagsUrl = "http://localhost:5000/post/" + postId + "/tags"
+            // const deployTagsUrl = "/post/" + postId + "/tags"
+            const data = {
+                "postId": postId,
+                "loggedInUserId": loggedInUserId
+            }
+            console.log(data)
+            axios.get(localTagsUrl, data)
+                .then(res=>{
+                    if(res.status === 200){
+                        console.log("HEEEERE are the tags: ")
+                        console.log(data)
+                        this.setState({
+                            tags: res.data,
+                            isLoggedIn: this.props.isLoggedIn,
+                            loggedInAsPostAuthor: (this.props.loggedInUserId === this.props.currentPost.authorId) ? true : false,
+                        })
+                    }
+                    console.log("tags ==")
+                    console.log(this.state.tags)
+                })
+                .catch(err=>{
+                    console.log(err)
+                })
         }
     }
 
@@ -56,8 +91,8 @@ export default class OnlyPostPage extends Component {
                     if (commentResponse.status === 200) {
                         this.setState({
                             comments: commentResponse.data,
-                            resp: true,
-                        })
+                            resp: true
+                        });
                     }
                 })
                 .catch(er => {
@@ -84,29 +119,34 @@ export default class OnlyPostPage extends Component {
             })
     }
 
+
     render() {
-        var {post, isLoggedIn, comments, loggedInUserId, loggedInAsPostAuthor} = this.state
+        var {postId, post, isLoggedIn, comments, loggedInUserId, loggedInAsPostAuthor, userNickname, tags} = this.state
         if(post) {
             return (
                 <div>
                     <div className="post">
                         <img src={post.imageUrl}
-                             alt="under Maintanance"
+                             alt="X"
                         />
                         <h3>{post.title}</h3>
                         <p dangerouslySetInnerHTML={{__html: post.content}}></p>
-                        <p className="published">{post.published} </p>
+                        <p className="published">written by {userNickname} </p>
                         {isLoggedIn && loggedInAsPostAuthor &&
                         <>
-                            <Link to="/editPost">Edit Post</Link>
+                            <Link onClick={()=> this.props.onEditUpdateTags(tags)} to="/editPost">Edit Post</Link>
                             <span> | </span>
                             <Link onClick={this.deletePost} to="/">Delete Post</Link>
                         </>}
+                        <Tags
+                            loggedInUserId={loggedInUserId}
+                            postId={postId}
+                        />
                     </div>
                     <section id="gallery">
                         <div className="container">
-                            {comments.map(comment => {
-                                return <Comment {...this.props} comment={comment} loggedInUserId={loggedInUserId}/>
+                            {comments.map((comment, index) => {
+                                return <Comment key={index} {...this.props} comment={comment} loggedInUserId={loggedInUserId}/>
                             })}
                         </div>
                         {isLoggedIn && !this.state.newCommentButton &&
@@ -114,9 +154,15 @@ export default class OnlyPostPage extends Component {
                         }
                         {isLoggedIn && this.state.newCommentButton &&
                         <div>
-                            <NewComment postId={this.state.post.id} authorId={this.state.loggedInUserId}
-                                        onSuccess={this.onNewCommentSuccess}/>
-                            <button onClick={this.onNewCommentButtonClick}>Cancel New Comment</button>
+                            <NewComment
+                                userNickname={userNickname}
+                                postId={this.state.post.id}
+                                authorId={this.state.loggedInUserId}
+                                onSuccess={this.onNewCommentSuccess}/>
+                            <button
+                                onClick={this.onNewCommentButtonClick}>
+                                Cancel New Comment
+                            </button>
                         </div>
                         }
                     </section>

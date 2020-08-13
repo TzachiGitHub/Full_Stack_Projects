@@ -1,26 +1,30 @@
 import React from 'react';
 import {Link} from 'react-router-dom'
 import axios from 'axios'
-import './../App.css'
+import Tags from '../TagsDir/Tags'
+import '../App.css'
 
 export default class SinglePost extends React.Component{
     constructor(props) {
         super(props);
-
+        const {userNickname, post, loggedInUserId, isLoggedIn, setCurrentPost} = this.props
         this.state={
-            post: this.props.post,
-            loggedInUserId: this.props.loggedInUserId,
-            isLoggedIn: this.props.isLoggedIn,
-            setCurrentPost: this.props.setCurrentPost
+            post: post,
+            loggedInUserId: loggedInUserId,
+            isLoggedIn: isLoggedIn,
+            setCurrentPost: setCurrentPost,
+            userNickname: userNickname,
         }
     }
 
     componentDidMount(){
+        const {userNickname, post, loggedInUserId, isLoggedIn, setCurrentPost} = this.props
         this.setState({
-            post: this.props.post,
-            loggedInUserId: this.props.loggedInUserId,
-            isLoggedIn: this.props.isLoggedIn,
-            setCurrentPost: this.props.setCurrentPost
+            post: post,
+            userNickname: userNickname,
+            loggedInUserId: loggedInUserId,
+            isLoggedIn: isLoggedIn,
+            setCurrentPost: setCurrentPost,
         })
     }
 
@@ -40,25 +44,25 @@ export default class SinglePost extends React.Component{
             })
     }
 
+
     render() {
         var {isLoggedIn, loggedInUserId} = this.state
-        var {imageUrl, title, content, published, linkDescription, authorId} = this.props.post
-        linkDescription = (linkDescription !== "") ? linkDescription : "X"
+        var {imageUrl, title, content, author, authorId, id} = this.props.post
 
         return (
             <div className="blogPosts">
                 <div>
-                    <img src={imageUrl} alt={linkDescription}/>
+                    <img src={imageUrl} alt="X"/>
                     <h3>{title}</h3>
                     <p dangerouslySetInnerHTML={{__html: content}}></p>
-                    <p>published by {published}.</p>
                     <div className="postLinks">
                         <div className="FullPostLink">
                             <Link onClick={(props)=>{this.props.setCurrentPost(this.props.post)}} to='/post'>View Full Post</Link>
                         </div>
+                        <span className="writtenBy">Written by {author}.</span>
+                        <Tags loggedInUserId={loggedInUserId} postId={id} />
                         {isLoggedIn &&
-                            (loggedInUserId === authorId) &&
-
+                            (parseInt(loggedInUserId) === parseInt(authorId)) &&
                             <div id="deletePostLink">
                                 <Link onClick={this.deletePost} to="/">Delete Post</Link>
                             </div>

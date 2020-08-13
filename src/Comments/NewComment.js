@@ -5,13 +5,16 @@ import axios from 'axios'
 export default class NewComment extends Component{
     constructor(props) {
         super(props);
+
+        const {authorId, postId, userNickname} = this.props
+
         this.state={
             title: "",
             content: "",
             imageUrl: "",
-            author: "",
-            authorId: this.props.authorId,
-            postId: this.props.postId,
+            author: userNickname,
+            authorId: authorId,
+            postId: postId,
         }
     }
 
@@ -28,7 +31,7 @@ export default class NewComment extends Component{
     addComment = (e) =>{
         var {postId, authorId, title, content, imageUrl, author} = this.state
 
-        if(title !== "" && content !== "" && author !== "" && imageUrl !== "" && this.validURL(imageUrl)) {
+        if(title !== "" && content !== "" && imageUrl !== "" && this.validURL(imageUrl)) {
             var jsonPost =
                 {
                     "title": title,
@@ -58,30 +61,25 @@ export default class NewComment extends Component{
         return (
             <div>
                 <h1>Create New Comment</h1>
+                <span>Title: </span>
                 <input
-                    type="text" name="commentTitle" placeholder="Comment title goes here"
+                    type="text" name="commentTitle"
                     className="commentTitle" required
                     onChange={(e)=>{this.setState({title: e.target.value})}}
                 />
                 <br/><br/>
-                <input name="commentContent" placeholder="Comment content goes here"
-                       className="commentContent" required
-                       onChange={(e)=>{this.setState({content: e.target.value})}}
+                <span>Content: </span>
+                <input
+                    name="commentContent"
+                    className="commentContent" required
+                    onChange={(e)=>{this.setState({content: e.target.value})}}
                 />
                 <br/>
-                <input name="published" placeholder="author name goes here"
-                       className="newPostTitle"
-                       onChange={(e)=>{this.setState({author: e.target.value})}}
-                />
-                <br/>
-                <input name="imageUrl" placeholder="image url goes here"
-                       className="newPostTitle"
-                       onChange={(e)=>{this.setState({imageUrl: e.target.value})}}
-                />
-                <br/>
-                <input name="linkDescription" placeholder="optional: adding link description (if the link is offline)"
-                       className="newPostTitle"
-                       onChange={(e)=>{this.setState({linkDescription: e.target.value})}}
+                <span>image Url: </span>
+                <input
+                    name="imageUrl"
+                    className="newPostTitle"
+                    onChange={(e)=>{this.setState({imageUrl: e.target.value})}}
                 />
                 <br/>
                 <button onClick={this.addComment}>Save Comment</button>

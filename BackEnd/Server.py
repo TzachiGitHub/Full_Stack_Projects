@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, make_response, g
+from flask import Flask, request, abort, make_response, g, jsonify
 import json
 import uuid
 import bcrypt
@@ -28,14 +28,6 @@ pool = mysql.connector.pooling.MySQLConnectionPool(
 # )
 
 
-# db = mysql.connect(
-# host="my-rds.cdl39yfkqbt1.us-east-1.rds.amazonaws.com",
-# port=3306,
-# user="admin",
-# passwd="password",
-# database="blog"
-# )
-
 # app = Flask(__name__,
 #             static_folder='/home/ubuntu/build',
 #             static_url_path='/')
@@ -57,13 +49,30 @@ def teardown_request(exception):
 def index():
     return app.send_static_file("./index.html")
 
+@app.route("/api/alive", methods=['GET'])
+def alive():
+    return "Alive!"
 
-@app.route('/posts', methods=['GET', 'POST'])
+@app.route('/posts', methods=['GET', 'POST', 'PUT'])
 def manage_posts():
     if request.method == 'GET':
         return get_all_posts()
-    else:
+    elif request.method == 'POST':
         return add_post()
+    else:
+        return update_post()
+
+
+def update_post():
+    data = request.get_json()
+    query = "update posts set title=%s, content=%s, imageUrl=%s where id=%s"
+    values = (data['title'], data['content'], data['imageUrl'], data['postId'])
+    cursor = g.db.cursor()
+    cursor.execute(query, values)
+    g.db.commit()
+    new_post_id = cursor.lastrowid
+    cursor.close()
+    return 'Added' + str(new_post_id)
 
 
 @app.route('/comments/<post_id>', methods=['GET'])
@@ -84,7 +93,6 @@ def get_comments(post_id):
 @app.route('/comment', methods=['POST'])
 def add_comment():
     data = request.get_json()
-    print(data)
     query = "insert into comments (title, content, author, imageUrl, author_id, post_id) values (%s, %s, %s, %s, %s, %s)"
     values = (data['title'], data['content'], data['author'], data['imageUrl'], data['authorId'], data['postId'])
     cursor = g.db.cursor()
@@ -127,8 +135,8 @@ def edit_post():
     if not record:
         cursor.close()
         abort(401)
-    query = "update posts set imageUrl=%s, title=%s, content=%s, published=%s, linkDescription=%s where id=%s"
-    values = (post['imageUrl'], post['title'], post['content'], post['published'], post['linkDescription'], post['id'])
+    query = "update posts set imageUrl=%s, title=%s, content=%s, author=%s where id=%s"
+    values = (post['imageUrl'], post['title'], post['content'], post['author'], post['id'])
     cursor.execute(query, values)
     g.db.commit()
     cursor.close()
@@ -148,6 +156,11 @@ def delete_post():
         abort(401)
     if str(record[0]) != str(post['authorId']):
         abort(403)
+    query_tags = "delete from tags where post_id=%s"
+    cursor = g.db.cursor()
+    cursor.execute(query_tags,values_auth)
+    cursor.close()
+
     cursor = g.db.cursor()
     query_delete_comments = "delete from comments where post_id=%s"
     values_delete_comments = (post['id'],)
@@ -181,7 +194,6 @@ def delete_comment():
         abort(401)
     query_delete = "delete from comments where id=%s"
     values_delete = (comment_id,)
-    print(comment_id)
     cursor.execute(query_delete, values_delete)
     g.db.commit()
     cursor.close()
@@ -190,49 +202,57 @@ def delete_comment():
 
 @app.route('/post/<id>', methods=['GET'])
 def get_post(id):
-    query = "select id, title, content, linkDescription, imageUrl, published, author_id from posts where id = %s"
+    query = "select id, title, content, imageUrl, author, author_id from posts where id = %s"
     values = [str(id)]
     cursor = g.db.cursor()
     cursor.execute(query, values)
     record = cursor.fetchone()
     cursor.close()
-    header = ['id', 'title', 'content', 'linkDescription', 'imageUrl', 'published', "authorId"]
+    header = ['id', 'title', 'content', 'imageUrl', 'author', "authorId"]
     json_answer = json.dumps(dict(zip(header, record)))
     return json_answer
 
 
+@app.route('/post/<post_id>/tags', methods=['GET','POST'])
+def manage_tags(post_id):
+    if request.method == 'POST':
+        return add_tags(post_id)
+    else:
+        get_all_tags(post_id)
+
+
 @app.route('/signup', methods=['POST'])
 def signup():
-    msg = ''
     data = request.get_json()
     username = data['username']
     password = data['password']
+    nickname = data['nickname']
     cursor = g.db.cursor()
     exists_query = "select id from users where username = %s"
-    exists_values = (username,)
+    exists_values = (username, )
     cursor.execute(exists_query, exists_values)
     record_exists = cursor.fetchone()
     if record_exists:
         cursor.close()
         abort(401)
-    else:
-        insert_query = 'insert into users (username, password) values (%s, %s)'
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        insert_values = (username, hashed_password)
-        cursor.execute(insert_query, insert_values)
-        g.db.commit()
-        cursor.close()
-        query_id = "select id from users where username=%s"
-        values_id = (username, )
-        cursor = g.db.cursor()
-        cursor.execute(query_id, values_id)
-        user_id = cursor.fetchone()[0]
-        cursor.close()
-        session_id = str(uuid.uuid4())
-        response = make_response()
-        response.set_cookie("session_id", session_id)
-        response = {"userId": user_id}
-        return response
+    insert_query = 'insert into users (username, password, nickname) values (%s, %s, %s)'
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    insert_values = (username, hashed_password, nickname)
+    cursor.execute(insert_query, insert_values)
+    g.db.commit()
+    cursor.close()
+
+    query_id = "select id from users where username=%s"
+    values_id = (username, )
+    cursor = g.db.cursor()
+    cursor.execute(query_id, values_id)
+    user_id = cursor.fetchone()[0]
+    cursor.close()
+    session_id = str(uuid.uuid4())
+    response = make_response()
+    response.set_cookie("session_id", session_id)
+    response = {"userId": user_id}
+    return response
 
 
 @app.route('/login', methods=['POST'])
@@ -242,7 +262,7 @@ def login():
     password = data['password']
     cursor = g.db.cursor()
     # check if the username exists
-    existsQuery = "select id, username, password from users where username = %s"
+    existsQuery = "select id, username, password, nickname from users where username = %s"
     existsValues = (username,)
     cursor.execute(existsQuery, existsValues)
     recordExists = cursor.fetchone()
@@ -257,11 +277,12 @@ def login():
     # sessions part of the code
     session_id = str(uuid.uuid4())
     user_id = recordExists[0]
+    nickname = recordExists[3]
     sessionQuery = "insert into sessions (user_id, session_id) values (%s, %s) on duplicate key update session_id = %s"
     sessionValues = (user_id, session_id, session_id)
     cursor.execute(sessionQuery, sessionValues)
     g.db.commit()
-    user_data = {"userId": user_id}
+    user_data = {"userId": user_id, "nickname": nickname}
     response = make_response(user_data)
     response.set_cookie("session_id", session_id)
     cursor.close()
@@ -294,15 +315,10 @@ def logout(id):
     cursor.execute(validation_query, validation_values)
     record = cursor.fetchone()
     cursor.close()
-
     if not record:
         abort(401)
-    print("from db: username == record[0] ==")
-    print(record[0])
-
     if record[0] != data['username']:
         abort(403)
-
     query = "delete from sessions where user_id = %s"
     values = (id,)
     cursor = g.db.cursor()
@@ -312,15 +328,39 @@ def logout(id):
     return "deleted from the database"
 
 
-@app.route("/api/alive", methods=['GET'])
-def alive():
-    return "Alive!"
+def get_all_tags(post_id):
+        print("1")
+        query = "select id, name, post_id from tags where post_id=%s"
+        value = (post_id,)
+        cursor = g.db.cursor()
+        cursor.execute(query, value)
+        records = cursor.fetchall()
+        print("2")
+        if not records:
+            print("not records")
+            cursor.close()
+            return []
+        header = ['id', 'name', 'post_id']
+        data = []
+        print("3")
+        for r in records:
+            data.append(dict(zip(header, r)))
+        cursor.close()
+        print("4")
+        print(json.dumps(data))
+        return jsonify(data=data)
+
+
+def add_tags(post_id):
+    data = request.get_json()
+    print("TODO - NEED TO IMPLEMENT ADD_TAGS()")
+    return "TODO - NEED TO IMPLEMENT ADD_TAGS()"
 
 
 def add_post():
     data = request.get_json()
-    query = "insert into posts (title, content, published, imageUrl, linkDescription, author_id) values (%s, %s, %s, %s, %s, %s)"
-    values = (data['title'], data['content'], data['published'], data['imageUrl'], data['linkDescription'], data['loggedInUserId'])
+    query = "insert into posts (title, content, author, imageUrl, author_id) values (%s, %s, %s, %s, %s)"
+    values = (data['title'], data['content'], data['author'], data['imageUrl'], data['loggedInUserId'])
     cursor = g.db.cursor()
     cursor.execute(query, values)
     g.db.commit()
@@ -330,12 +370,12 @@ def add_post():
 
 
 def get_all_posts():
-    query = "select id, title, content, linkDescription, imageUrl, published, author_id from posts"
+    query = "select id, title, content, imageUrl, author, author_id from posts"
     cursor = g.db.cursor()
     cursor.execute(query)
     records = cursor.fetchall()
     cursor.close()
-    header = ['id', 'title', 'content', 'linkDescription', 'imageUrl', 'published', 'authorId']
+    header = ['id', 'title', 'content', 'imageUrl', 'author', 'authorId']
     data = []
     for r in records:
         data.append(dict(zip(header, r)))

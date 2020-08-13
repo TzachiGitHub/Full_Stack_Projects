@@ -1,22 +1,17 @@
 import React from 'react';
-import Header from './Header.js';
-import './App.css';
-import AboutMe from './AboutMe';
-import NewPost from './newPost';
-import Home from './HomePage/Home';
-import Signup from './Signup';
-import EditPost from './EditPost';
-import Login from './Login';
-import OnlyPostPage from './HomePage/OnlyPostPage';
 import axios from 'axios';
 import 'react-router-dom';
-import {Redirect} from 'react-router-dom';
 import Cookie from 'js-cookie'
-
-import {
-    BrowserRouter,
-    Switch,
-    Route} from 'react-router-dom';
+import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom';
+import './App.css';
+import AboutMe from './AboutMe';
+import Header from './Header.js';
+import Home from './HomePage/Home';
+import Login from './Registration/Login';
+import Signup from './Registration/Signup';
+import NewPost from './PostsDir/newPost';
+import EditPost from './PostsDir/EditPost';
+import OnlyPostPage from './PostsDir/OnlyPostPage';
 
 export default class App extends React.Component{
     constructor(props) {
@@ -24,8 +19,10 @@ export default class App extends React.Component{
         this.state ={   
             isLoggedIn: Cookie.get('username') != null,
             username: Cookie.get('username') || "",
+            nickname: Cookie.get('nickname') || "",
             loggedInUserId: Cookie.get('loggedInUserId') || null,
-            currentPost: null
+            currentPost: null,
+            currentTags: null,
         }
         console.log()
         this.handleLogin = this.handleLogin.bind(this);
@@ -35,17 +32,26 @@ export default class App extends React.Component{
     handleLogin = (loginData)=>{
         this.setState({
             username: loginData.username,
+            nickname: loginData.nickname,
             isLoggedIn: loginData.isLoggedIn,
             loggedInUserId: loginData.loggedInUserId,
         })
         Cookie.set("loggedInUserId", this.state.loggedInUserId)
         Cookie.set("username", this.state.username)
+        Cookie.set("nickname", this.state.nickname)
     }
 
     setCurrentPost = (post)=>{
         this.setState({
             currentPost: post
         })
+    }
+
+    updateTags = (tags) => {
+        this.setState({
+            currentTags: tags
+        })
+        console.log("updateTags was called!")
     }
 
     logOut = ()=>{
@@ -66,7 +72,6 @@ export default class App extends React.Component{
                     })
                     Cookie.remove("username")
                     Cookie.remove("loggedInUserId")
-                    alert("Logout Successfully!")
                 }
 
             }).catch(err => {
@@ -76,19 +81,19 @@ export default class App extends React.Component{
     }
 
     render(){
-        var {loggedInUserId, isLoggedIn, username, currentPost} = this.state;
+        var {loggedInUserId, isLoggedIn, username, currentPost, nickname, tags} = this.state;
         return(
             <BrowserRouter>
-                <Header loggedInUserId={loggedInUserId} isloggedIn={isLoggedIn} logOut={this.logOut} username={username}/>
+                <Header loggedInUserId={loggedInUserId} isloggedIn={isLoggedIn} logOut={this.logOut} nickname={nickname} username={username}/>
                 <Switch>
                     <Route path="/about" component={AboutMe}/>
-                    <Route path='/post' component={(props)=><OnlyPostPage {...props} currentPost={currentPost} loggedInUserId={loggedInUserId} isLoggedIn={isLoggedIn}/>}/>
+                    <Route path='/post' component={(props)=><OnlyPostPage {...props} onEditUpdateTags={this.updateTags} currentPost={currentPost} loggedInUserId={loggedInUserId} isLoggedIn={isLoggedIn}/>}/>
                     <Route path="/Signup" render={(props) => <Signup {...props} handleLogin={this.handleLogin}/>}/>
                     <Route path="/login" component={(props) => <Login {...props} handleLogin={this.handleLogin}/>}/>
                     <Route path="/logout" component={this.logout}/>
-                    <Route path="/newPost" component={(props)=> true ? <NewPost {...props} username={username} loggedInUserId={loggedInUserId}/> : <Redirect to={'/login'}/>}/>}
-                    <Route path="/editPost" component={(props)=> isLoggedIn ? <EditPost {...props} currentPost={currentPost} username={username}/> : <Redirect to={'/login'}/>}/>
-                    <Route path="/" component={(props)=><Home {...props} isLoggedIn={isLoggedIn} loggedInUserId={this.state.loggedInUserId} setCurrentPost={this.setCurrentPost}/>}/>
+                    <Route path="/newPost" component={(props)=> isLoggedIn ? <NewPost {...props} nickname={nickname} loggedInUserId={loggedInUserId}/> : <Redirect to={'/login'}/>}/>}
+                    <Route path="/editPost" component={(props)=> isLoggedIn ? <NewPost {...props} tags={tags} currentPost={currentPost} loggedInUserId={loggedInUserId} nickname={nickname}/> : <Redirect to={'/login'}/>}/>
+                    <Route path="/" component={(props)=><Home {...props} nickname={nickname} isLoggedIn={isLoggedIn} loggedInUserId={this.state.loggedInUserId} setCurrentPost={this.setCurrentPost}/>}/>
                 </Switch>
             </BrowserRouter>
         )

@@ -30,12 +30,12 @@ export default class Login extends React.Component{
             }
         // const deployUrl = '/login'
         const localUrl = 'http://127.0.0.1:5000/login'
-
         axios.post(localUrl, jsonData)
             .then((res)=> {
                 if(res.status === 200) {
                     var loginData = {
-                        username: this.state.username,
+                        username: username,
+                        nickname: res.data.nickname,
                         isLoggedIn: true,
                         loggedInUserId: res.data.userId
                     }
@@ -55,28 +55,27 @@ export default class Login extends React.Component{
     render(){
         return (
             <div>
-                <form onSubmit={this.handleSubmit}>
-
-                    <h2> Please Enter a Username and a Password to Login:</h2>
-
-                    <div>
-                        <p> Username:</p>
+                <h2> Please Enter a Username and a Password to Login:</h2>
+                <form onSubmit={this.handleSubmit} id="Registration">
+                    <div className="registrationSpan">
+                        <span>Username:</span>
                         <input
                             type="text"
-                            placeholder="username"
+                            className="registrationInput"
                             onChange={event => {this.setState({username: event.target.value})}}
                             required
                         />
                     </div>
-
-                    <p> password:</p>
+                    <div className="registrationSpan">
+                    <span>Password:</span>
                     <input
+                        className="registrationInput"
                         type="password"
-                        placeholder="password"
                         onChange={event => {this.setState({password: event.target.value})}}
                         required
                     />
-                    <button type="submit">Signup</button>
+                    </div>
+                    <button className="registrationButton" type="submit">Signup</button>
                 </form>
             </div>
         );
