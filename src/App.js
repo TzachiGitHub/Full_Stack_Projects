@@ -10,7 +10,6 @@ import Home from './HomePage/Home';
 import Login from './Registration/Login';
 import Signup from './Registration/Signup';
 import NewPost from './PostsDir/newPost';
-import EditPost from './PostsDir/EditPost';
 import OnlyPostPage from './PostsDir/OnlyPostPage';
 
 export default class App extends React.Component{
@@ -92,7 +91,6 @@ export default class App extends React.Component{
                     <Route path="/login" component={(props) => <Login {...props} handleLogin={this.handleLogin}/>}/>
                     <Route path="/logout" component={this.logout}/>
                     <Route path="/newPost" component={(props)=> isLoggedIn ? <NewPost {...props} nickname={nickname} loggedInUserId={loggedInUserId}/> : <Redirect to={'/login'}/>}/>}
-                    <Route path="/editPost" component={(props)=> isLoggedIn ? <NewPost {...props} tags={tags} currentPost={currentPost} loggedInUserId={loggedInUserId} nickname={nickname}/> : <Redirect to={'/login'}/>}/>
                     <Route path="/" component={(props)=><Home {...props} nickname={nickname} isLoggedIn={isLoggedIn} loggedInUserId={this.state.loggedInUserId} setCurrentPost={this.setCurrentPost}/>}/>
                 </Switch>
             </BrowserRouter>
